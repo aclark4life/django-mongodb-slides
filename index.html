@@ -63,7 +63,8 @@
         <section class="title">
           <img class="brand-lockup" src="assets/mongodb/MongoDB_White.svg" alt="MongoDB" style="height: 1.4em;" />
           <h1>Django <span style="color:#fff">+</span> MongoDB</h1>
-          <p class="subtitle">Building Django apps on a document database with <code>django-mongodb-backend</code></p>
+          <p class="subtitle">Building Django apps on a document database with <span style="white-space: nowrap;">Django MongoDB Backend</span></p>
+          <p class="subtitle"><code>pip install django-mongodb-backend</code></p>
           <p class="footnote">django-mongodb-backend 6.0.3 · Django 6.0.5</p>
           <aside class="notes">
             Hi everyone — thanks for coming. I'm Alex Clark, a Senior Software Engineer
@@ -102,6 +103,16 @@
             <li>What's new in 6.0: encryption, geo, polymorphism</li>
             <li>Limitations &amp; resources</li>
           </ul>
+          <aside class="notes">
+            Here's our path. Three blocks: first, why MongoDB and why this
+            specific Django backend; then the day-to-day mechanics — modeling,
+            querying, indexes, constraints; then what's new in the 6.0 series,
+            which is mostly what's worth getting excited about. We close with
+            honest limitations and where to learn more.
+
+            If you only remember one slide from today, it's slide 5 — what
+            django-mongodb-backend actually is and isn't.
+          </aside>
         </section>
 
         <!-- 3. Why MongoDB -->
@@ -125,6 +136,18 @@
               </ul>
             </div>
           </div>
+          <aside class="notes">
+            Two angles to motivate this. On the left: the document model.
+            Your schema fits the object instead of the object fitting the
+            schema. A customer has an address; the address rides along inside
+            the customer document. Adding a country field tomorrow doesn't
+            require a migration on millions of rows.
+
+            On the right: operations. Sharding for horizontal scale, replica
+            sets for high availability, ACID transactions when you need them,
+            and Atlas if you'd rather not run it yourself — including
+            full-text search and vector search as first-class features.
+          </aside>
         </section>
 
         <!-- 4. Why Django on MongoDB -->
@@ -137,6 +160,20 @@
             <li>Officially maintained by MongoDB</li>
           </ul>
           <p class="footnote">Repo: <a href="https://github.com/mongodb/django-mongodb-backend">github.com/mongodb/django-mongodb-backend</a></p>
+          <aside class="notes">
+            The pitch in four bullets. You don't give up Django — admin,
+            migrations, forms, auth, signals, the whole stack keeps working.
+            What you gain is document-native modeling: EmbeddedModelField,
+            ArrayField, ObjectIdField.
+
+            When the ORM doesn't reach far enough — full-text search, complex
+            aggregations, $lookup — raw_aggregate lets you drop in any MQL
+            pipeline and get model instances back.
+
+            And critically: this is officially maintained by MongoDB. Not a
+            hobby project, not a community fork that might bitrot. There's a
+            team behind it.
+          </aside>
         </section>
 
         <!-- 5. Meet the backend -->
@@ -148,6 +185,21 @@
             <li>Built on PyMongo</li>
             <li>Translates the ORM to MQL — <code>str(qs.query)</code> prints MQL</li>
           </ul>
+          <aside class="notes">
+            This is the framing slide. django-mongodb-backend is a Django
+            database backend — the same plug point as the postgres, mysql,
+            sqlite backends. It is NOT an ODM layered on top of an ORM. That
+            distinction matters, because it means querysets, the admin,
+            migrations, and third-party apps that go through the ORM all
+            just work.
+
+            It tracks Django releases — 5.0, 5.1, 5.2, 6.0 — so you pin the
+            matching major. It's built on PyMongo, so anything you already
+            know about driver connection pooling and BSON applies. And here's
+            a fun party trick: str(qs.query) on any queryset prints the MQL
+            the backend produced. Useful for debugging and for learning how
+            the translation works.
+          </aside>
         </section>
 
         <!-- 6. Install -->
@@ -162,6 +214,17 @@ django-admin startproject mysite \
   --template https://github.com/mongodb/django-mongodb-project/archive/refs/heads/6.0.x.zip
           </code></pre>
           <p class="footnote">The project template wires up <code>DATABASES</code>, <code>DEFAULT_AUTO_FIELD</code>, and migration helpers for you.</p>
+          <aside class="notes">
+            Two commands and you're moving. Pip install with a version pin
+            that matches your Django series — 6.0.* tracks Django 6.0. Then
+            the project template: django-admin startproject pointing at
+            MongoDB's template repository on GitHub.
+
+            The template isn't strictly required, but it saves you ten
+            minutes of fiddling — it pre-fills DATABASES with parse_uri,
+            sets DEFAULT_AUTO_FIELD to ObjectId, and patches a couple of
+            migration helpers. If you're starting a new project, just use it.
+          </aside>
         </section>
 
 
@@ -184,6 +247,20 @@ INSTALLED_APPS = [
 ]
           </code></pre>
           <p class="footnote"><code>parse_uri()</code> understands Atlas SRV URIs and TLS options.</p>
+          <aside class="notes">
+            Three things to call out. parse_uri does the heavy lifting — give
+            it any MongoDB connection string, including Atlas SRV URIs with
+            TLS options, and you get back a fully-shaped DATABASES entry. No
+            more hand-mapping HOST, PORT, NAME, OPTIONS.
+
+            DEFAULT_AUTO_FIELD pointing at ObjectIdAutoField means every
+            model's primary key is a real BSON ObjectId, not an integer, not
+            a UUID. That matters at scale and in distributed writes.
+
+            And adding django_mongodb_backend to INSTALLED_APPS registers
+            the backend's system checks, management commands, and admin URL
+            converter.
+          </aside>
         </section>
 
         <!-- 8. First model -->
@@ -202,6 +279,18 @@ class Movie(models.Model):
         indexes = [models.Index(fields=["year", "title"])]
           </code></pre>
           <p>Looks like Django, stores like MongoDB. <code>id</code> is an <code>ObjectId</code>.</p>
+          <aside class="notes">
+            This is just a Django model. Nothing exotic. CharField,
+            IntegerField, JSONField for the genres list, a compound Index on
+            (year, title). If you've written a Django model before, you've
+            written this slide.
+
+            The only invisible difference: id is an ObjectId instead of an
+            AutoField integer, because of DEFAULT_AUTO_FIELD. On disk this
+            is one document in a `movies` collection — no separate tables
+            for the index, no separate table for the JSON list. One
+            collection, one document per movie.
+          </aside>
         </section>
 
         <!-- 9. Embedded models -->
@@ -221,6 +310,19 @@ class Customer(models.Model):
     address = EmbeddedModelField(Address)
           </code></pre>
           <p>One document. No join. <code>customer.address.city</code> just works.</p>
+          <aside class="notes">
+            Now we leave SQL-land. EmbeddedModel is a model class that
+            doesn't have its own collection — it can only exist embedded
+            inside another model. Address goes inside Customer via
+            EmbeddedModelField.
+
+            The whole thing is one document on disk. No join, no foreign
+            key, no migration to add a column to the address.
+            customer.address.city is both a Python attribute lookup and a
+            single MongoDB field path. This is the move that maps most
+            "has-one" relationships in your domain to a single round-trip
+            read.
+          </aside>
         </section>
 
         <!-- 10. Embedded arrays -->
@@ -241,6 +343,21 @@ class Order(models.Model):
     items    = EmbeddedModelArrayField(LineItem)
     tags     = ArrayField(models.CharField(max_length=30), default=list)
           </code></pre>
+          <p>One round-trip. The whole order — line items, tags — hydrated together.</p>
+          <aside class="notes">
+            Same idea, repeated. Order has many LineItems — instead of an
+            order_items table with a foreign key back to orders, you get an
+            array of LineItem subdocuments stored on the Order itself. One
+            round-trip loads the entire order with all its lines.
+
+            ArrayField is the simpler cousin: an array of plain scalar
+            values — CharField in this case, for tags. Use ArrayField for
+            "list of strings", EmbeddedModelArrayField for "list of
+            structured records".
+
+            This is the modeling decision that makes most ported Django
+            apps feel faster on MongoDB than they did on Postgres.
+          </aside>
         </section>
 
         <!-- 11. Querying -->
@@ -259,6 +376,18 @@ Order.objects.filter(tags__contains=["priority"])
 # See the MQL the ORM produced
 print(Movie.objects.filter(year=2024).query)
           </code></pre>
+          <aside class="notes">
+            Identical to the ORM you already know. filter, gte, order_by,
+            slicing — same syntax, same chaining. Reaching into embedded
+            documents is just double-underscore traversal: address__city.
+            Array membership uses __contains.
+
+            The last line is the debug trick. On a Postgres backend,
+            str(qs.query) prints the SQL. On this backend, it prints the
+            MQL — the actual $match/$project the backend will send. Great
+            for ticket reports, great for understanding what the ORM did
+            with your filter.
+          </aside>
         </section>
 
         <!-- 12. Aggregation -->
@@ -275,6 +404,19 @@ for row in Movie.objects.raw_aggregate(pipeline):
     print(row)
           </code></pre>
           <p>Full power of the aggregation framework — <code>$lookup</code>, <code>$search</code>, <code>$vectorSearch</code>, …</p>
+          <aside class="notes">
+            When the ORM doesn't reach far enough — and sometimes it
+            doesn't — raw_aggregate is the escape hatch. You hand it a
+            real MongoDB aggregation pipeline as a list of stage dicts;
+            the backend runs it and hydrates the output documents back
+            into model instances.
+
+            That gives you the entire aggregation framework: $lookup for
+            cross-collection joins, $search for Atlas Search full-text,
+            $vectorSearch for nearest-neighbor on embeddings. None of that
+            requires dropping back to PyMongo or maintaining a parallel
+            data access layer.
+          </aside>
         </section>
 
         <!-- 13. Indexes -->
@@ -294,6 +436,17 @@ class Customer(models.Model):
         ]
           </code></pre>
           <p class="footnote">New in 6.0.2: index/uniqueness on subfields of embedded &amp; embedded-array fields.</p>
+          <aside class="notes">
+            Standard Django Index, on top-level fields, works exactly as
+            you'd expect. The new piece is EmbeddedFieldIndex — it lets
+            you index a subfield of an embedded document. Here, address.city.
+
+            Under the hood, MongoDB creates a normal index on the dotted
+            path. Any query that filters or sorts on
+            customer.address__city will use it. This shipped in 6.0.2 and
+            was a notable gap before that — without it, embedded documents
+            were hard to use for hot query paths.
+          </aside>
         </section>
 
         <!-- 14. Unique constraints -->
@@ -316,6 +469,19 @@ class Customer(models.Model):
             EmbeddedFieldUniqueConstraint("address.zip"),
         ]
           </code></pre>
+          <p>Indexes do the work; the constraint is a thin wrapper over a unique index.</p>
+          <aside class="notes">
+            Two flavors of unique. Django's UniqueConstraint with
+            nulls_distinct=True — that means multiple rows with NULL email
+            are all allowed; only non-null values are deduped. This is the
+            same semantics Postgres got in Django 5.0, and it's available
+            in this backend as of 6.0.2.
+
+            EmbeddedFieldUniqueConstraint is the embedded counterpart of
+            EmbeddedFieldIndex from the previous slide — uniqueness on a
+            subfield, here address.zip. Same dotted-path mechanism,
+            enforced by a unique index on the collection.
+          </aside>
         </section>
 
         <!-- 15. Polymorphic embedded -->
@@ -337,6 +503,20 @@ class Invoice(models.Model):
     history  = PolymorphicEmbeddedModelArrayField([CardPayment, WirePayment])
           </code></pre>
           <p class="footnote">Indexes &amp; unique constraints on polymorphic subfields are also supported.</p>
+          <aside class="notes">
+            New in 6.0.3, and it's the feature I get the most questions
+            about. Polymorphic embedded fields: an embedded field whose
+            type can be one of several model classes. Here, Invoice.payment
+            is either a CardPayment or a WirePayment.
+
+            The backend stores a class discriminator alongside the data,
+            and on read it reconstructs the right model class — so
+            invoice.payment is a CardPayment instance with a real .last4
+            attribute, or a WirePayment with .iban.
+            PolymorphicEmbeddedModelArrayField is the array variant, for
+            things like a payment history with mixed types. Indexes and
+            unique constraints work on the subfields the same way.
+          </aside>
         </section>
 
         <!-- 16. Queryable Encryption -->
@@ -345,7 +525,7 @@ class Invoice(models.Model):
           <ul class="tight">
             <li>Encrypt fields client-side; query them <em>without</em> decrypting server-side</li>
             <li>Declared on the model, enforced by the backend</li>
-            <li>Models with encrypted fields refuse to migrate into a non-encrypted database</li>
+            <li>Migrations refuse to run against a non-encrypted database</li>
           </ul>
           <pre><code class="language-python" data-trim>
 from django_mongodb_backend.encryption import EncryptedCharField
@@ -354,6 +534,21 @@ class Patient(models.Model):
     name = models.CharField(max_length=120)
     ssn  = EncryptedCharField(max_length=11, queries={"queryType": "equality"})
           </code></pre>
+          <aside class="notes">
+            Queryable Encryption is a MongoDB-level feature: fields are
+            encrypted client-side, the server only ever sees ciphertext,
+            but you can still do equality queries on them — because the
+            encryption is structured in a way that lets the server match
+            without decrypting.
+
+            In Django, you declare it on the model: EncryptedCharField
+            with the query type you want — equality here. The backend has
+            a guardrail: migrations refuse to run against a non-encrypted
+            database, so you can't accidentally write plaintext PII into
+            a dev environment that wasn't set up for it.
+
+            Use case: SSNs, account numbers, anything regulated.
+          </aside>
         </section>
 
         <!-- 17. Spatial -->
@@ -369,6 +564,18 @@ Cafe.objects.filter(
 )
           </code></pre>
           <p>GeoDjango-style queries, MongoDB-native execution.</p>
+          <aside class="notes">
+            GeoDjango-style queries, executed natively on a MongoDB
+            2dsphere index. Cafe.objects.filter with location__dwithin,
+            passing a Point and a Distance — same API you'd use against
+            PostGIS.
+
+            Under the hood, the backend translates that to $geoNear or
+            $geoWithin depending on the lookup. The contrib.gis support
+            is partial — see the limitations slide a few ahead — but the
+            lookups people reach for most often are there: dwithin,
+            intersects, within, contains.
+          </aside>
         </section>
 
         <!-- 18. Admin -->
@@ -383,6 +590,19 @@ Cafe.objects.filter(
 # urls.py
 path("orders/&lt;objectid:pk&gt;/", OrderDetail.as_view()),
           </code></pre>
+          <aside class="notes">
+            The "still works" is half-joke, half-relief. Django admin is
+            one of the things people are afraid they'll lose when
+            switching backends — you don't. Register your models the way
+            you always have. Embedded fields render as inline nested
+            forms automatically, because the field knows how to render
+            itself.
+
+            As of 6.0.3, the URL path converter for ObjectId is
+            registered for you — you can write &lt;objectid:pk&gt;
+            directly in your urlconf and the lookup just works. Before
+            that, you'd write a custom converter. Now you don't.
+          </aside>
         </section>
 
         <!-- 19. Limitations -->
@@ -392,9 +612,26 @@ path("orders/&lt;objectid:pk&gt;/", OrderDetail.as_view()),
             <li>No SQL — some third-party apps that emit raw SQL won't work</li>
             <li>Cross-collection joins exist, but you'll lean on embedding</li>
             <li><code>contrib.gis</code> support is partial (lookups, not full GeoDjango)</li>
-            <li>Schema migrations are lighter — Mongo doesn't enforce shape</li>
+            <li>Schema migrations are lighter — MongoDB doesn't enforce a fixed shape</li>
           </ul>
           <p class="footnote">Check the docs' "Known issues" page before porting a large app.</p>
+          <aside class="notes">
+            Be honest with the room. Things that won't work: any
+            third-party Django app that emits raw SQL — no shim is going
+            to translate that in general, and you'll find out quickly
+            when you exercise the feature.
+
+            Cross-collection joins exist via $lookup, but the document
+            philosophy says embed first; if you find yourself joining a
+            lot, your data model is fighting MongoDB's strengths.
+            contrib.gis is partial — lookups but not the full GeoDjango
+            feature set. And schema migrations exist but are lighter,
+            because MongoDB doesn't enforce a fixed shape — a migration
+            is mostly index DDL and data backfills, not column add/drop.
+
+            Always read the docs' "Known issues" page before porting a
+            large existing app.
+          </aside>
         </section>
 
         <!-- 20. Resources -->
@@ -407,6 +644,18 @@ path("orders/&lt;objectid:pk&gt;/", OrderDetail.as_view()),
             <li>MongoDB University — Django + MongoDB learning path</li>
             <li>Atlas free tier — <a href="https://www.mongodb.com/atlas">mongodb.com/atlas</a></li>
           </ul>
+          <aside class="notes">
+            Where to go from here. Read the docs — they're thorough and
+            they're the source of truth on what's supported in each
+            release. Star the repo if you want release notifications.
+            Use the project template to bootstrap your next demo project
+            — saves the ten minutes I mentioned earlier.
+
+            MongoDB University has a Django + MongoDB learning path with
+            guided exercises if you want to follow along structured. And
+            Atlas has a free tier — M0 — which is enough to do
+            everything we showed today, no credit card required.
+          </aside>
         </section>
 
         <!-- 21. Thanks -->
@@ -423,6 +672,16 @@ path("orders/&lt;objectid:pk&gt;/", OrderDetail.as_view()),
   social   : "@aclark4life" }
           </code></pre>
           <p class="footnote">Press <kbd>S</kbd> for speaker notes, <kbd>F</kbd> for fullscreen, <kbd>?</kbd> for shortcuts</p>
+          <aside class="notes">
+            That's the talk. The bio block has my email and handle —
+            please reach out, especially if you're trying to port an
+            existing Django app and hit something that isn't covered, or
+            if there's a feature you wish was there. We read every issue
+            and every feature request, and the roadmap is genuinely
+            shaped by what people ask for.
+
+            Open the floor for questions.
+          </aside>
         </section>
 
 
