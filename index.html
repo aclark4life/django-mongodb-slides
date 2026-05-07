@@ -31,14 +31,26 @@
         background: var(--mdb-green-dark); color: #fff; font-size: 0.5em; vertical-align: middle;
       }
       .reveal blockquote { border-left: 4px solid var(--mdb-green); }
+
+      .mdb-watermark {
+        position: fixed; bottom: 14px; left: 18px;
+        width: 36px; height: 36px; opacity: 0.55;
+        pointer-events: none; z-index: 30;
+      }
+      .reveal section.title .brand-lockup {
+        display: block; margin: 0 auto 0.6em;
+        height: 1.1em; width: auto;
+      }
     </style>
   </head>
   <body>
+    <img class="mdb-watermark" src="assets/mongodb/MongoDB_Logomark_SpringGreen.svg" alt="MongoDB" />
     <div class="reveal">
       <div class="slides">
 
         <!-- 1. Title -->
         <section class="title">
+          <img class="brand-lockup" src="assets/mongodb/MongoDB_White.svg" alt="MongoDB" style="height: 1.4em;" />
           <h1>Django <span style="color:#fff">+</span> MongoDB</h1>
           <p class="subtitle">Building Django apps on a document database with <code>django-mongodb-backend</code></p>
           <p class="footnote">Reveal.js 6.0.1 · django-mongodb-backend 6.0.3 · Django 6.0</p>
@@ -366,8 +378,17 @@ path("orders/&lt;objectid:pk&gt;/", OrderDetail.as_view()),
 
         <!-- 21. Thanks -->
         <section class="title">
+          <img class="brand-lockup" src="assets/mongodb/MongoDB_White.svg" alt="MongoDB" style="height: 1.4em;" />
           <h1>Thanks 👋</h1>
           <p class="subtitle">Questions?</p>
+          <pre><code class="language-javascript" data-trim>
+{ name     : "Jeffrey 'Alex' Clark",
+  title    : "Senior Software Engineer",
+  group    : "Database Experience Team",
+  location : "Bethesda, MD, USA",
+  email    : "alex.clark@mongodb.com",
+  social   : "@aclark4life" }
+          </code></pre>
           <p class="footnote">Slides built with Reveal.js 6 · Press <kbd>S</kbd> for speaker notes, <kbd>F</kbd> for fullscreen, <kbd>?</kbd> for shortcuts</p>
         </section>
 
