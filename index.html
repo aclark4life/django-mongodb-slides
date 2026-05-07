@@ -21,6 +21,17 @@
       .reveal a { color: var(--mdb-green); }
       .reveal pre { box-shadow: none; font-size: 0.55em; }
       .reveal pre code { padding: 1em; border-radius: 6px; max-height: 560px; }
+      .reveal :not(pre) > code {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 0.85em;
+        padding: 0.08em 0.4em;
+        border-radius: 4px;
+        background: rgba(0, 237, 100, 0.12);
+        color: var(--mdb-green);
+        border: 1px solid rgba(0, 237, 100, 0.28);
+        white-space: nowrap;
+      }
+      .reveal a code { color: inherit; border-color: currentColor; }
       .reveal section.title h1 { font-size: 2.4em; }
       .reveal section.title .subtitle { color: #bbb; font-size: 0.9em; }
       .reveal .footnote { font-size: 0.45em; color: #888; }
@@ -53,7 +64,29 @@
           <img class="brand-lockup" src="assets/mongodb/MongoDB_White.svg" alt="MongoDB" style="height: 1.4em;" />
           <h1>Django <span style="color:#fff">+</span> MongoDB</h1>
           <p class="subtitle">Building Django apps on a document database with <code>django-mongodb-backend</code></p>
-          <p class="footnote">Reveal.js 6.0.1 · django-mongodb-backend 6.0.3 · Django 6.0</p>
+          <p class="footnote">django-mongodb-backend 6.0.3 · Django 6.0.5</p>
+          <aside class="notes">
+            Hi everyone — thanks for coming. I'm Alex Clark, a Senior Software Engineer
+            on MongoDB's Database Experience Team, and today we're going to talk about
+            using Django with MongoDB.
+
+            Quick show of hands: who here has shipped a Django app to production?
+            And who has used MongoDB before, in any language? Great — so most of you
+            already know both halves of this story.
+
+            The goal of the next ~30 minutes is to convince you that "Django on MongoDB"
+            is no longer a hack or a third-party ODM bolt-on. It's a first-class Django
+            database backend, officially maintained by MongoDB, that translates the
+            Django ORM into MQL. You keep the admin, migrations, forms, and auth — and
+            you gain document-native modeling like embedded documents, arrays, and
+            ObjectIds.
+
+            Versions on this slide are what I'll be demoing against:
+            django-mongodb-backend 6.0.3 paired with Django 6.0.5.
+
+            Please interrupt with questions whenever — I'd rather have a conversation
+            than a monologue. Let's dive in.
+          </aside>
         </section>
 
         <!-- 2. Agenda -->
@@ -389,7 +422,7 @@ path("orders/&lt;objectid:pk&gt;/", OrderDetail.as_view()),
   email    : "alex.clark@mongodb.com",
   social   : "@aclark4life" }
           </code></pre>
-          <p class="footnote">Slides built with Reveal.js 6 · Press <kbd>S</kbd> for speaker notes, <kbd>F</kbd> for fullscreen, <kbd>?</kbd> for shortcuts</p>
+          <p class="footnote">Press <kbd>S</kbd> for speaker notes, <kbd>F</kbd> for fullscreen, <kbd>?</kbd> for shortcuts</p>
         </section>
 
 
