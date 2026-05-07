@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <title>Django + MongoDB</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reset.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/highlight/monokai.css" />
+
+    <style>
+      :root {
+        --mdb-green: #00ed64;
+        --mdb-green-dark: #00684a;
+        --django-green: #0c4b33;
+      }
+      .reveal h1, .reveal h2, .reveal h3 { color: var(--mdb-green); text-transform: none; }
+      .reveal .accent { color: var(--mdb-green); }
+      .reveal a { color: var(--mdb-green); }
+      .reveal pre { box-shadow: none; font-size: 0.55em; }
+      .reveal pre code { padding: 1em; border-radius: 6px; max-height: 560px; }
+      .reveal section.title h1 { font-size: 2.4em; }
+      .reveal section.title .subtitle { color: #bbb; font-size: 0.9em; }
+      .reveal .footnote { font-size: 0.45em; color: #888; }
+      .reveal ul.tight li { margin: 0.15em 0; }
+      .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; align-items: start; text-align: left; }
+      .reveal .pill {
+        display: inline-block; padding: 0.15em 0.6em; border-radius: 999px;
+        background: var(--mdb-green-dark); color: #fff; font-size: 0.5em; vertical-align: middle;
+      }
+      .reveal blockquote { border-left: 4px solid var(--mdb-green); }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+
+        <!-- 1. Title -->
+        <section class="title">
+          <h1>Django <span style="color:#fff">+</span> MongoDB</h1>
+          <p class="subtitle">Building Django apps on a document database with <code>django-mongodb-backend</code></p>
+          <p class="footnote">Reveal.js 6.0.1 · django-mongodb-backend 6.0.3 · Django 6.0</p>
+        </section>
+
+        <!-- 2. Agenda -->
+        <section>
+          <h2>Agenda</h2>
+          <ul class="tight">
+            <li>Why MongoDB for a Django app?</li>
+            <li>Meet <code>django-mongodb-backend</code></li>
+            <li>Install &amp; configure</li>
+            <li>Modeling: embedded docs, arrays, ObjectIds</li>
+            <li>Querying &amp; aggregation</li>
+            <li>Indexes &amp; unique constraints</li>
+            <li>What's new in 6.0: encryption, geo, polymorphism</li>
+            <li>Limitations &amp; resources</li>
+          </ul>
+        </section>
+
+        <!-- 3. Why MongoDB -->
+        <section>
+          <h2>Why MongoDB?</h2>
+          <div class="two-col">
+            <div>
+              <h3>Document model</h3>
+              <ul class="tight">
+                <li>Schema <em>fits the object</em>, not the other way around</li>
+                <li>Nested documents &amp; arrays — no join tables</li>
+                <li>Flexible evolution without painful migrations</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Operationally</h3>
+              <ul class="tight">
+                <li>Horizontal scale via sharding</li>
+                <li>Replica sets &amp; transactions</li>
+                <li>Atlas: managed, with search &amp; vector search</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Why Django on MongoDB -->
+        <section>
+          <h2>Django <em>on</em> MongoDB?</h2>
+          <ul class="tight">
+            <li>Keep what you love: ORM, admin, migrations, forms, auth</li>
+            <li>Gain document-native modeling: <code>EmbeddedModelField</code>, <code>ArrayField</code>, <code>ObjectIdField</code></li>
+            <li>Drop into MQL/aggregation when you need it (<code>raw_aggregate</code>)</li>
+            <li>Officially maintained by MongoDB</li>
+          </ul>
+          <p class="footnote">Repo: <a href="https://github.com/mongodb/django-mongodb-backend">github.com/mongodb/django-mongodb-backend</a></p>
+        </section>
+
+        <!-- 5. Meet the backend -->
+        <section>
+          <h2>Meet <code>django-mongodb-backend</code></h2>
+          <ul class="tight">
+            <li>A first-class Django <em>database backend</em> (not an ODM bolt-on)</li>
+            <li>Tracks Django releases: <span class="pill">5.0</span> <span class="pill">5.1</span> <span class="pill">5.2</span> <span class="pill">6.0</span></li>
+            <li>Built on PyMongo</li>
+            <li>Translates the ORM to MQL — <code>str(qs.query)</code> prints MQL</li>
+          </ul>
+        </section>
+
+        <!-- 6. Install -->
+        <section>
+          <h2>Install</h2>
+          <pre><code class="language-bash" data-trim>
+# Pick the series matching your Django version
+pip install "django-mongodb-backend==6.0.*"
+
+# Start a project from MongoDB's template
+django-admin startproject mysite \
+  --template https://github.com/mongodb/django-mongodb-project/archive/refs/heads/6.0.x.zip
+          </code></pre>
+          <p class="footnote">The project template wires up <code>DATABASES</code>, <code>DEFAULT_AUTO_FIELD</code>, and migration helpers for you.</p>
+        </section>
+
+
+        <!-- 7. settings.py -->
+        <section>
+          <h2><code>settings.py</code></h2>
+          <pre><code class="language-python" data-trim>
+DATABASES = {
+    "default": django_mongodb_backend.parse_uri(
+        "mongodb://localhost:27017/mysite",
+    ),
+}
+
+# Use ObjectId as the default primary key
+DEFAULT_AUTO_FIELD = "django_mongodb_backend.fields.ObjectIdAutoField"
+
+INSTALLED_APPS = [
+    # ...
+    "django_mongodb_backend",
+]
+          </code></pre>
+          <p class="footnote"><code>parse_uri()</code> understands Atlas SRV URIs and TLS options.</p>
+        </section>
+
+        <!-- 8. First model -->
+        <section>
+          <h2>Your first model</h2>
+          <pre><code class="language-python" data-trim>
+from django.db import models
+
+class Movie(models.Model):
+    title = models.CharField(max_length=200)
+    year = models.IntegerField()
+    genres = models.JSONField(default=list)
+    runtime = models.IntegerField(null=True)
+
+    class Meta:
+        indexes = [models.Index(fields=["year", "title"])]
+          </code></pre>
+          <p>Looks like Django, stores like MongoDB. <code>id</code> is an <code>ObjectId</code>.</p>
+        </section>
+
+        <!-- 9. Embedded models -->
+        <section>
+          <h2>Embedded documents</h2>
+          <pre><code class="language-python" data-trim>
+from django_mongodb_backend.fields import EmbeddedModelField
+from django_mongodb_backend.models import EmbeddedModel
+
+class Address(EmbeddedModel):
+    street = models.CharField(max_length=200)
+    city   = models.CharField(max_length=100)
+    zip    = models.CharField(max_length=20)
+
+class Customer(models.Model):
+    name    = models.CharField(max_length=120)
+    address = EmbeddedModelField(Address)
+          </code></pre>
+          <p>One document. No join. <code>customer.address.city</code> just works.</p>
+        </section>
+
+        <!-- 10. Embedded arrays -->
+        <section>
+          <h2>Arrays of embedded docs</h2>
+          <pre><code class="language-python" data-trim>
+from django_mongodb_backend.fields import (
+    ArrayField, EmbeddedModelArrayField,
+)
+
+class LineItem(EmbeddedModel):
+    sku      = models.CharField(max_length=40)
+    qty      = models.IntegerField()
+    price    = models.DecimalField(max_digits=8, decimal_places=2)
+
+class Order(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    items    = EmbeddedModelArrayField(LineItem)
+    tags     = ArrayField(models.CharField(max_length=30), default=list)
+          </code></pre>
+        </section>
+
+        <!-- 11. Querying -->
+        <section>
+          <h2>Querying feels like Django</h2>
+          <pre><code class="language-python" data-trim>
+# Top-level fields
+Movie.objects.filter(year__gte=2020).order_by("-year")[:10]
+
+# Reach into embedded docs with double-underscore
+Customer.objects.filter(address__city="Berlin")
+
+# Array membership
+Order.objects.filter(tags__contains=["priority"])
+
+# See the MQL the ORM produced
+print(Movie.objects.filter(year=2024).query)
+          </code></pre>
+        </section>
+
+        <!-- 12. Aggregation -->
+        <section>
+          <h2>When you need MQL: <code>raw_aggregate</code></h2>
+          <pre><code class="language-python" data-trim>
+pipeline = [
+    {"$match": {"year": {"$gte": 2020}}},
+    {"$group": {"_id": "$year", "count": {"$sum": 1}}},
+    {"$sort":  {"_id": -1}},
+]
+
+for row in Movie.objects.raw_aggregate(pipeline):
+    print(row)
+          </code></pre>
+          <p>Full power of the aggregation framework — <code>$lookup</code>, <code>$search</code>, <code>$vectorSearch</code>, …</p>
+        </section>
+
+        <!-- 13. Indexes -->
+        <section>
+          <h2>Indexes — including embedded fields</h2>
+          <pre><code class="language-python" data-trim>
+from django_mongodb_backend.indexes import EmbeddedFieldIndex
+
+class Customer(models.Model):
+    name    = models.CharField(max_length=120)
+    address = EmbeddedModelField(Address)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["name"]),
+            EmbeddedFieldIndex("address.city"),
+        ]
+          </code></pre>
+          <p class="footnote">New in 6.0.2: index/uniqueness on subfields of embedded &amp; embedded-array fields.</p>
+        </section>
+
+        <!-- 14. Unique constraints -->
+        <section>
+          <h2>Unique constraints, the Mongo way</h2>
+          <pre><code class="language-python" data-trim>
+from django.db.models import UniqueConstraint
+from django_mongodb_backend.constraints import EmbeddedFieldUniqueConstraint
+
+class Customer(models.Model):
+    email   = models.EmailField(null=True, blank=True)
+    address = EmbeddedModelField(Address)
+
+    class Meta:
+        constraints = [
+            # Multiple NULLs allowed (6.0.2+)
+            UniqueConstraint(
+                fields=["email"], name="uniq_email", nulls_distinct=True,
+            ),
+            EmbeddedFieldUniqueConstraint("address.zip"),
+        ]
+          </code></pre>
+        </section>
+
+        <!-- 15. Polymorphic embedded -->
+        <section>
+          <h2>Polymorphic embedded models <span class="pill">6.0.3</span></h2>
+          <pre><code class="language-python" data-trim>
+from django_mongodb_backend.fields import (
+    PolymorphicEmbeddedModelField,
+    PolymorphicEmbeddedModelArrayField,
+)
+
+class CardPayment(EmbeddedModel):
+    last4 = models.CharField(max_length=4)
+class WirePayment(EmbeddedModel):
+    iban  = models.CharField(max_length=34)
+
+class Invoice(models.Model):
+    payment  = PolymorphicEmbeddedModelField([CardPayment, WirePayment])
+    history  = PolymorphicEmbeddedModelArrayField([CardPayment, WirePayment])
+          </code></pre>
+          <p class="footnote">Indexes &amp; unique constraints on polymorphic subfields are also supported.</p>
+        </section>
+
+        <!-- 16. Queryable Encryption -->
+        <section>
+          <h2>Queryable Encryption <span class="pill">6.0.1</span></h2>
+          <ul class="tight">
+            <li>Encrypt fields client-side; query them <em>without</em> decrypting server-side</li>
+            <li>Declared on the model, enforced by the backend</li>
+            <li>Models with encrypted fields refuse to migrate into a non-encrypted database</li>
+          </ul>
+          <pre><code class="language-python" data-trim>
+from django_mongodb_backend.encryption import EncryptedCharField
+
+class Patient(models.Model):
+    name = models.CharField(max_length=120)
+    ssn  = EncryptedCharField(max_length=11, queries={"queryType": "equality"})
+          </code></pre>
+        </section>
+
+        <!-- 17. Spatial -->
+        <section>
+          <h2>Spatial lookups <span class="pill">6.0.1</span></h2>
+          <pre><code class="language-python" data-trim>
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import D
+
+# 2dsphere index under the hood
+Cafe.objects.filter(
+    location__dwithin=(Point(13.405, 52.52), D(km=2)),
+)
+          </code></pre>
+          <p>GeoDjango-style queries, MongoDB-native execution.</p>
+        </section>
+
+        <!-- 18. Admin -->
+        <section>
+          <h2>The Django admin… still works</h2>
+          <ul class="tight">
+            <li>Register models exactly as you always have</li>
+            <li>Embedded fields render as nested forms</li>
+            <li><code>ObjectId</code> primary keys are matched in URLs out of the box <span class="pill">6.0.3</span></li>
+          </ul>
+          <pre><code class="language-python" data-trim>
+# urls.py
+path("orders/&lt;objectid:pk&gt;/", OrderDetail.as_view()),
+          </code></pre>
+        </section>
+
+        <!-- 19. Limitations -->
+        <section>
+          <h2>Honest limitations</h2>
+          <ul class="tight">
+            <li>No SQL — some third-party apps that emit raw SQL won't work</li>
+            <li>Cross-collection joins exist, but you'll lean on embedding</li>
+            <li><code>contrib.gis</code> support is partial (lookups, not full GeoDjango)</li>
+            <li>Schema migrations are lighter — Mongo doesn't enforce shape</li>
+          </ul>
+          <p class="footnote">Check the docs' "Known issues" page before porting a large app.</p>
+        </section>
+
+        <!-- 20. Resources -->
+        <section>
+          <h2>Resources</h2>
+          <ul class="tight">
+            <li>Docs — <a href="https://django-mongodb-backend.readthedocs.io/">django-mongodb-backend.readthedocs.io</a></li>
+            <li>Source — <a href="https://github.com/mongodb/django-mongodb-backend">github.com/mongodb/django-mongodb-backend</a></li>
+            <li>Project template — <a href="https://github.com/mongodb/django-mongodb-project">github.com/mongodb/django-mongodb-project</a></li>
+            <li>MongoDB University — Django + MongoDB learning path</li>
+            <li>Atlas free tier — <a href="https://www.mongodb.com/atlas">mongodb.com/atlas</a></li>
+          </ul>
+        </section>
+
+        <!-- 21. Thanks -->
+        <section class="title">
+          <h1>Thanks 👋</h1>
+          <p class="subtitle">Questions?</p>
+          <p class="footnote">Slides built with Reveal.js 6 · Press <kbd>S</kbd> for speaker notes, <kbd>F</kbd> for fullscreen, <kbd>?</kbd> for shortcuts</p>
+        </section>
+
+
+      </div>
+    </div>
+
+    <script type="module">
+      import Reveal from 'https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.mjs';
+      import Highlight from 'https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/highlight.mjs';
+      import Notes from 'https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/notes.mjs';
+
+      const deck = new Reveal({
+        hash: true,
+        slideNumber: 'c/t',
+        transition: 'slide',
+        plugins: [Highlight, Notes],
+      });
+      deck.initialize();
+    </script>
+  </body>
+</html>
