@@ -172,10 +172,12 @@ django-admin startproject mysite \
         <section>
           <h2><code>settings.py</code></h2>
           <pre><code class="language-python" data-trim>
+import os
+
 DATABASES = {
     "default": {
         "ENGINE": "django_mongodb_backend",
-        "HOST": "mongodb://localhost:27017",
+        "HOST": os.environ.get("MONGODB_URI", "mongodb://localhost:27017"),
         "NAME": "mysite",
     },
 }
@@ -188,14 +190,16 @@ INSTALLED_APPS = [
     "django_mongodb_backend",
 ]
           </code></pre>
-          <p class="footnote"><code>HOST</code> accepts any MongoDB connection string — including Atlas SRV URIs and TLS options.</p>
+          <p class="footnote"><code>HOST</code> accepts any MongoDB connection string — including Atlas SRV URIs and TLS options. Read it from the environment so secrets stay out of the repo.</p>
           <aside class="notes">
             Three things to call out. HOST takes the connection string
             directly — any MongoDB URI, including Atlas SRV URIs with TLS
-            options, goes straight into HOST. No helper needed, no
-            hand-mapping HOST, PORT, NAME, OPTIONS. (If you've used
-            earlier 5.x docs you might remember a parse_uri() helper —
-            that was deprecated in 5.2.1 and removed in 6.0.)
+            options, goes straight into HOST. We read it from the
+            MONGODB_URI environment variable so credentials never live
+            in the repo. No helper needed, no hand-mapping HOST, PORT,
+            NAME, OPTIONS. (If you've used earlier 5.x docs you might
+            remember a parse_uri() helper — that was deprecated in
+            5.2.1 and removed in 6.0.)
 
             DEFAULT_AUTO_FIELD pointing at ObjectIdAutoField means every
             model's primary key is a real BSON ObjectId, not an integer, not
