@@ -38,6 +38,8 @@
       .reveal ul.tight li { margin: 0.15em 0; }
       .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; align-items: start; text-align: left; }
       .reveal .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1em; align-items: start; text-align: left; }
+      .reveal .two-col > div, .reveal .three-col > div { min-width: 0; }
+      .reveal .two-col pre, .reveal .three-col pre { max-width: 100%; box-sizing: border-box; }
       .reveal .pill {
         display: inline-block; padding: 0.15em 0.6em; border-radius: 999px;
         background: var(--mdb-green-dark); color: #fff; font-size: 0.5em; vertical-align: middle;
