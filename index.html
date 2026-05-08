@@ -95,7 +95,7 @@
           <h2>Agenda</h2>
           <ul class="tight">
             <li>Why MongoDB for a Django app?</li>
-            <li>Meet <code>django-mongodb-backend</code></li>
+            <li>Meet Django MongoDB Backend</li>
             <li>Install &amp; configure</li>
             <li>Modeling: embedded docs, arrays, ObjectIds</li>
             <li>Querying &amp; aggregation</li>
@@ -128,7 +128,7 @@
               </ul>
             </div>
             <div>
-              <h3>Operationally</h3>
+              <h3>Operations</h3>
               <ul class="tight">
                 <li>Horizontal scale via sharding</li>
                 <li>Replica sets &amp; transactions</li>
@@ -178,7 +178,7 @@
 
         <!-- 5. Meet the backend -->
         <section>
-          <h2>Meet <code>django-mongodb-backend</code></h2>
+          <h2>Meet Django MongoDB Backend</h2>
           <ul class="tight">
             <li>A first-class Django <em>database backend</em> (not an ODM bolt-on)</li>
             <li>Tracks Django releases: <span class="pill">5.0</span> <span class="pill">5.1</span> <span class="pill">5.2</span> <span class="pill">6.0</span></li>
@@ -221,9 +221,10 @@ django-admin startproject mysite \
             MongoDB's template repository on GitHub.
 
             The template isn't strictly required, but it saves you ten
-            minutes of fiddling — it pre-fills DATABASES with parse_uri,
-            sets DEFAULT_AUTO_FIELD to ObjectId, and patches a couple of
-            migration helpers. If you're starting a new project, just use it.
+            minutes of fiddling — it pre-fills DATABASES with your
+            connection string, sets DEFAULT_AUTO_FIELD to ObjectId, and
+            patches a couple of migration helpers. If you're starting a
+            new project, just use it.
           </aside>
         </section>
 
@@ -233,9 +234,11 @@ django-admin startproject mysite \
           <h2><code>settings.py</code></h2>
           <pre><code class="language-python" data-trim>
 DATABASES = {
-    "default": django_mongodb_backend.parse_uri(
-        "mongodb://localhost:27017/mysite",
-    ),
+    "default": {
+        "ENGINE": "django_mongodb_backend",
+        "HOST": "mongodb://localhost:27017",
+        "NAME": "mysite",
+    },
 }
 
 # Use ObjectId as the default primary key
@@ -246,12 +249,14 @@ INSTALLED_APPS = [
     "django_mongodb_backend",
 ]
           </code></pre>
-          <p class="footnote"><code>parse_uri()</code> understands Atlas SRV URIs and TLS options.</p>
+          <p class="footnote"><code>HOST</code> accepts any MongoDB connection string — including Atlas SRV URIs and TLS options.</p>
           <aside class="notes">
-            Three things to call out. parse_uri does the heavy lifting — give
-            it any MongoDB connection string, including Atlas SRV URIs with
-            TLS options, and you get back a fully-shaped DATABASES entry. No
-            more hand-mapping HOST, PORT, NAME, OPTIONS.
+            Three things to call out. HOST takes the connection string
+            directly — any MongoDB URI, including Atlas SRV URIs with TLS
+            options, goes straight into HOST. No helper needed, no
+            hand-mapping HOST, PORT, NAME, OPTIONS. (If you've used
+            earlier 5.x docs you might remember a parse_uri() helper —
+            that was deprecated in 5.2.1 and removed in 6.0.)
 
             DEFAULT_AUTO_FIELD pointing at ObjectIdAutoField means every
             model's primary key is a real BSON ObjectId, not an integer, not
