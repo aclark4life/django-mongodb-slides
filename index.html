@@ -263,7 +263,60 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 7. Why MongoDB -->
+        <!-- 7. Global vs per-app default_auto_field -->
+        <section>
+          <h2>Global vs per-app</h2>
+          <p>Set it once in <code>settings.py</code> — or per app in <code>AppConfig</code>.</p>
+          <div class="two-col">
+            <div>
+              <h3><code>settings.py</code></h3>
+              <pre><code class="language-python" data-trim>
+DEFAULT_AUTO_FIELD = "django_mongodb_backend.fields.ObjectIdAutoField"
+              </code></pre>
+              <ul class="tight">
+                <li>Project-wide default</li>
+                <li>Applies to every app that doesn't override</li>
+              </ul>
+            </div>
+            <div>
+              <h3><code>apps.py</code></h3>
+              <pre><code class="language-python" data-trim>
+from django.apps import AppConfig
+
+
+class BlogConfig(AppConfig):
+    default_auto_field = "django_mongodb_backend.fields.ObjectIdAutoField"
+    name = "blog"
+              </code></pre>
+              <ul class="tight">
+                <li>Per-app override</li>
+                <li>Wins over the global setting</li>
+              </ul>
+            </div>
+          </div>
+          <p class="footnote">Precedence: model <code>pk</code> &gt; app <code>default_auto_field</code> &gt; <code>DEFAULT_AUTO_FIELD</code>.</p>
+          <aside class="notes">
+            Two places to configure this. The global DEFAULT_AUTO_FIELD
+            in settings.py is the project-wide default — every app
+            that doesn't say otherwise picks it up. The per-app
+            default_auto_field on AppConfig is an override for one
+            app, and it wins over the global setting.
+
+            Why does the per-app knob exist? Django's contrib apps —
+            auth, admin, contenttypes — ship their own AppConfigs that
+            pin default_auto_field to BigAutoField for backwards
+            compatibility. The django-mongodb-project template you saw
+            earlier handles this for you by subclassing those
+            AppConfigs and pointing them at ObjectIdAutoField, so
+            every table in the project ends up with an ObjectId PK.
+
+            Precedence order, top-down: an explicit primary_key=True
+            field on the model wins; otherwise the app's
+            default_auto_field; otherwise the global DEFAULT_AUTO_FIELD.
+          </aside>
+        </section>
+
+        <!-- 8. Why MongoDB -->
         <section>
           <h2>Why MongoDB?</h2>
           <div class="two-col">
@@ -298,7 +351,7 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 8. Why Django on MongoDB -->
+        <!-- 9. Why Django on MongoDB -->
         <section>
           <h2>Django <em>on</em> MongoDB?</h2>
           <ul class="tight">
@@ -324,7 +377,7 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 9. First model -->
+        <!-- 10. First model -->
         <section>
           <h2>Your first model</h2>
           <pre><code class="language-python" data-trim>
@@ -355,7 +408,7 @@ class Movie(models.Model):
           </aside>
         </section>
 
-        <!-- 10. Embedded models -->
+        <!-- 11. Embedded models -->
         <section>
           <h2>Embedded documents</h2>
           <pre><code class="language-python" data-trim>
@@ -389,7 +442,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 11. Embedded arrays -->
+        <!-- 12. Embedded arrays -->
         <section>
           <h2>Arrays of embedded docs</h2>
           <pre><code class="language-python" data-trim>
@@ -427,7 +480,7 @@ class Order(models.Model):
           </aside>
         </section>
 
-        <!-- 12. Querying -->
+        <!-- 13. Querying -->
         <section>
           <h2>Querying feels like Django</h2>
           <pre><code class="language-python" data-trim>
@@ -457,7 +510,7 @@ print(Movie.objects.filter(year=2024).query)
           </aside>
         </section>
 
-        <!-- 13. Aggregation -->
+        <!-- 14. Aggregation -->
         <section>
           <h2>When you need MQL: <code>raw_aggregate</code></h2>
           <pre><code class="language-python" data-trim>
@@ -486,7 +539,7 @@ for row in Movie.objects.raw_aggregate(pipeline):
           </aside>
         </section>
 
-        <!-- 14. Indexes -->
+        <!-- 15. Indexes -->
         <section>
           <h2>Indexes — including embedded fields</h2>
           <pre><code class="language-python" data-trim>
@@ -517,7 +570,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 15. Unique constraints -->
+        <!-- 16. Unique constraints -->
         <section>
           <h2>Unique constraints, the Mongo way</h2>
           <pre><code class="language-python" data-trim>
@@ -555,7 +608,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 16. Polymorphic embedded -->
+        <!-- 17. Polymorphic embedded -->
         <section>
           <h2>Polymorphic embedded models <span class="pill">6.0.3</span></h2>
           <pre><code class="language-python" data-trim>
@@ -594,7 +647,7 @@ class Invoice(models.Model):
           </aside>
         </section>
 
-        <!-- 17. Queryable Encryption -->
+        <!-- 18. Queryable Encryption -->
         <section>
           <h2>Queryable Encryption <span class="pill">6.0.1</span></h2>
           <ul class="tight">
@@ -627,7 +680,7 @@ class Patient(models.Model):
           </aside>
         </section>
 
-        <!-- 18. Spatial -->
+        <!-- 19. Spatial -->
         <section>
           <h2>Spatial lookups <span class="pill">6.0.1</span></h2>
           <pre><code class="language-python" data-trim>
@@ -654,7 +707,7 @@ Cafe.objects.filter(
           </aside>
         </section>
 
-        <!-- 19. Admin -->
+        <!-- 20. Admin -->
         <section>
           <h2>The Django admin… still works</h2>
           <ul class="tight">
@@ -683,7 +736,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 20. Limitations -->
+        <!-- 21. Limitations -->
         <section>
           <h2>Honest limitations</h2>
           <ul class="tight">
@@ -712,7 +765,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 21. Resources -->
+        <!-- 22. Resources -->
         <section>
           <h2>Resources</h2>
           <ul class="tight">
@@ -736,7 +789,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 22. Thanks -->
+        <!-- 23. Thanks -->
         <section class="title">
           <img class="brand-lockup" src="assets/mongodb/MongoDB_White.svg" alt="MongoDB" style="height: 1.4em;" />
           <h1>Thanks 👋</h1>
