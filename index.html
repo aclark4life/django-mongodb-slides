@@ -192,7 +192,33 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 5. ObjectId primary keys -->
+        <!-- 5. Meet the backend -->
+        <section>
+          <h2>Meet Django MongoDB Backend</h2>
+          <ul class="tight">
+            <li>A first-class Django <em>database backend</em> (not an ODM bolt-on)</li>
+            <li>Tracks Django releases: <span class="pill">5.2</span> <span class="pill">6.0</span></li>
+            <li>Built on PyMongo</li>
+            <li>Translates the ORM to MQL — <code>str(qs.query)</code> prints MQL</li>
+          </ul>
+          <aside class="notes">
+            This is the framing slide. django-mongodb-backend is a Django
+            database backend — the same plug point as the postgres, mysql,
+            sqlite backends. It is NOT an ODM layered on top of an ORM. That
+            distinction matters, because it means querysets, the admin,
+            migrations, and third-party apps that go through the ORM all
+            just work.
+
+            It tracks Django releases — 5.2 and 6.0 — so you pin the
+            matching major. It's built on PyMongo, so anything you already
+            know about driver connection pooling and BSON applies. And here's
+            a fun party trick: str(qs.query) on any queryset prints the MQL
+            the backend produced. Useful for debugging and for learning how
+            the translation works.
+          </aside>
+        </section>
+
+        <!-- 6. ObjectId primary keys -->
         <section>
           <h2>ObjectId primary keys</h2>
           <p><code>DEFAULT_AUTO_FIELD</code> picks the field for auto-generated PKs — "auto" means <em>generated</em>, not <em>incremented</em>.</p>
@@ -243,7 +269,7 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 6. Global vs per-app default_auto_field -->
+        <!-- 7. Global vs per-app default_auto_field -->
         <section>
           <h2>Global vs per-app</h2>
           <p>Set it once in <code>settings.py</code> — or per app in <code>AppConfig</code>.</p>
@@ -293,32 +319,6 @@ class BlogConfig(AppConfig):
             Precedence order, top-down: an explicit primary_key=True
             field on the model wins; otherwise the app's
             default_auto_field; otherwise the global DEFAULT_AUTO_FIELD.
-          </aside>
-        </section>
-
-        <!-- 7. Meet the backend -->
-        <section>
-          <h2>Meet Django MongoDB Backend</h2>
-          <ul class="tight">
-            <li>A first-class Django <em>database backend</em> (not an ODM bolt-on)</li>
-            <li>Tracks Django releases: <span class="pill">5.2</span> <span class="pill">6.0</span></li>
-            <li>Built on PyMongo</li>
-            <li>Translates the ORM to MQL — <code>str(qs.query)</code> prints MQL</li>
-          </ul>
-          <aside class="notes">
-            This is the framing slide. django-mongodb-backend is a Django
-            database backend — the same plug point as the postgres, mysql,
-            sqlite backends. It is NOT an ODM layered on top of an ORM. That
-            distinction matters, because it means querysets, the admin,
-            migrations, and third-party apps that go through the ORM all
-            just work.
-
-            It tracks Django releases — 5.2 and 6.0 — so you pin the
-            matching major. It's built on PyMongo, so anything you already
-            know about driver connection pooling and BSON applies. And here's
-            a fun party trick: str(qs.query) on any queryset prints the MQL
-            the backend produced. Useful for debugging and for learning how
-            the translation works.
           </aside>
         </section>
 
