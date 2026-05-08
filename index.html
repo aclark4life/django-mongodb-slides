@@ -94,9 +94,9 @@
         <section>
           <h2>Agenda</h2>
           <ul class="tight">
-            <li>Why MongoDB for a Django app?</li>
             <li>Meet Django MongoDB Backend</li>
             <li>Install &amp; configure</li>
+            <li>Why MongoDB for a Django app?</li>
             <li>Modeling: embedded docs, arrays, ObjectIds</li>
             <li>Querying &amp; aggregation</li>
             <li>Indexes &amp; unique constraints</li>
@@ -115,73 +115,12 @@
           </aside>
         </section>
 
-        <!-- 3. Why MongoDB -->
-        <section>
-          <h2>Why MongoDB?</h2>
-          <div class="two-col">
-            <div>
-              <h3>Document model</h3>
-              <ul class="tight">
-                <li>Schema <em>fits the object</em>, not the other way around</li>
-                <li>Nested documents &amp; arrays — no join tables</li>
-                <li>Flexible evolution without painful migrations</li>
-              </ul>
-            </div>
-            <div>
-              <h3>Operations</h3>
-              <ul class="tight">
-                <li>Horizontal scale via sharding</li>
-                <li>Replica sets &amp; transactions</li>
-                <li>Atlas: managed, with search &amp; vector search</li>
-              </ul>
-            </div>
-          </div>
-          <aside class="notes">
-            Two angles to motivate this. On the left: the document model.
-            Your schema fits the object instead of the object fitting the
-            schema. A customer has an address; the address rides along inside
-            the customer document. Adding a country field tomorrow doesn't
-            require a migration on millions of rows.
-
-            On the right: operations. Sharding for horizontal scale, replica
-            sets for high availability, ACID transactions when you need them,
-            and Atlas if you'd rather not run it yourself — including
-            full-text search and vector search as first-class features.
-          </aside>
-        </section>
-
-        <!-- 4. Why Django on MongoDB -->
-        <section>
-          <h2>Django <em>on</em> MongoDB?</h2>
-          <ul class="tight">
-            <li>Keep what you love: ORM, admin, migrations, forms, auth</li>
-            <li>Gain document-native modeling: <code>EmbeddedModelField</code>, <code>ArrayField</code>, <code>ObjectIdField</code></li>
-            <li>Drop into MQL/aggregation when you need it (<code>raw_aggregate</code>)</li>
-            <li>Officially maintained by MongoDB</li>
-          </ul>
-          <p class="footnote">Repo: <a href="https://github.com/mongodb/django-mongodb-backend">github.com/mongodb/django-mongodb-backend</a></p>
-          <aside class="notes">
-            The pitch in four bullets. You don't give up Django — admin,
-            migrations, forms, auth, signals, the whole stack keeps working.
-            What you gain is document-native modeling: EmbeddedModelField,
-            ArrayField, ObjectIdField.
-
-            When the ORM doesn't reach far enough — full-text search, complex
-            aggregations, $lookup — raw_aggregate lets you drop in any MQL
-            pipeline and get model instances back.
-
-            And critically: this is officially maintained by MongoDB. Not a
-            hobby project, not a community fork that might bitrot. There's a
-            team behind it.
-          </aside>
-        </section>
-
-        <!-- 5. Meet the backend -->
+        <!-- 3. Meet the backend -->
         <section>
           <h2>Meet Django MongoDB Backend</h2>
           <ul class="tight">
             <li>A first-class Django <em>database backend</em> (not an ODM bolt-on)</li>
-            <li>Tracks Django releases: <span class="pill">5.0</span> <span class="pill">5.1</span> <span class="pill">5.2</span> <span class="pill">6.0</span></li>
+            <li>Tracks Django releases: <span class="pill">5.2</span> <span class="pill">6.0</span></li>
             <li>Built on PyMongo</li>
             <li>Translates the ORM to MQL — <code>str(qs.query)</code> prints MQL</li>
           </ul>
@@ -193,7 +132,7 @@
             migrations, and third-party apps that go through the ORM all
             just work.
 
-            It tracks Django releases — 5.0, 5.1, 5.2, 6.0 — so you pin the
+            It tracks Django releases — 5.2 and 6.0 — so you pin the
             matching major. It's built on PyMongo, so anything you already
             know about driver connection pooling and BSON applies. And here's
             a fun party trick: str(qs.query) on any queryset prints the MQL
@@ -202,7 +141,7 @@
           </aside>
         </section>
 
-        <!-- 6. Install -->
+        <!-- 4. Install -->
         <section>
           <h2>Install</h2>
           <pre><code class="language-bash" data-trim>
@@ -229,7 +168,7 @@ django-admin startproject mysite \
         </section>
 
 
-        <!-- 7. settings.py -->
+        <!-- 5. settings.py -->
         <section>
           <h2><code>settings.py</code></h2>
           <pre><code class="language-python" data-trim>
@@ -265,6 +204,67 @@ INSTALLED_APPS = [
             And adding django_mongodb_backend to INSTALLED_APPS registers
             the backend's system checks, management commands, and admin URL
             converter.
+          </aside>
+        </section>
+
+        <!-- 6. Why MongoDB -->
+        <section>
+          <h2>Why MongoDB?</h2>
+          <div class="two-col">
+            <div>
+              <h3>Document model</h3>
+              <ul class="tight">
+                <li>Schema <em>fits the object</em>, not the other way around</li>
+                <li>Nested documents &amp; arrays — no join tables</li>
+                <li>Flexible evolution without painful migrations</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Operations</h3>
+              <ul class="tight">
+                <li>Horizontal scale via sharding</li>
+                <li>Replica sets &amp; transactions</li>
+                <li>Atlas: managed, with search &amp; vector search</li>
+              </ul>
+            </div>
+          </div>
+          <aside class="notes">
+            Two angles to motivate this. On the left: the document model.
+            Your schema fits the object instead of the object fitting the
+            schema. A customer has an address; the address rides along inside
+            the customer document. Adding a country field tomorrow doesn't
+            require a migration on millions of rows.
+
+            On the right: operations. Sharding for horizontal scale, replica
+            sets for high availability, ACID transactions when you need them,
+            and Atlas if you'd rather not run it yourself — including
+            full-text search and vector search as first-class features.
+          </aside>
+        </section>
+
+        <!-- 7. Why Django on MongoDB -->
+        <section>
+          <h2>Django <em>on</em> MongoDB?</h2>
+          <ul class="tight">
+            <li>Keep what you love: ORM, admin, migrations, forms, auth</li>
+            <li>Gain document-native modeling: <code>EmbeddedModelField</code>, <code>ArrayField</code>, <code>ObjectIdField</code></li>
+            <li>Drop into MQL/aggregation when you need it (<code>raw_aggregate</code>)</li>
+            <li>Officially maintained by MongoDB</li>
+          </ul>
+          <p class="footnote">Repo: <a href="https://github.com/mongodb/django-mongodb-backend">github.com/mongodb/django-mongodb-backend</a></p>
+          <aside class="notes">
+            The pitch in four bullets. You don't give up Django — admin,
+            migrations, forms, auth, signals, the whole stack keeps working.
+            What you gain is document-native modeling: EmbeddedModelField,
+            ArrayField, ObjectIdField.
+
+            When the ORM doesn't reach far enough — full-text search, complex
+            aggregations, $lookup — raw_aggregate lets you drop in any MQL
+            pipeline and get model instances back.
+
+            And critically: this is officially maintained by MongoDB. Not a
+            hobby project, not a community fork that might bitrot. There's a
+            team behind it.
           </aside>
         </section>
 
