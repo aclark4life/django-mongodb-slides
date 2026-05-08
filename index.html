@@ -37,6 +37,7 @@
       .reveal .footnote { font-size: 0.45em; color: #888; }
       .reveal ul.tight li { margin: 0.15em 0; }
       .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; align-items: start; text-align: left; }
+      .reveal .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1em; align-items: start; text-align: left; }
       .reveal .pill {
         display: inline-block; padding: 0.15em 0.6em; border-radius: 999px;
         background: var(--mdb-green-dark); color: #fff; font-size: 0.5em; vertical-align: middle;
@@ -211,7 +212,58 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 6. Why MongoDB -->
+        <!-- 6. ObjectId primary keys -->
+        <section>
+          <h2>ObjectId primary keys</h2>
+          <p><code>DEFAULT_AUTO_FIELD</code> picks the field for auto-generated PKs — "auto" means <em>generated</em>, not <em>incremented</em>.</p>
+          <div class="three-col">
+            <div>
+              <h3>BigAutoField</h3>
+              <ul class="tight">
+                <li>64-bit integer counter</li>
+                <li>Database hands out the next value</li>
+                <li>Awkward under sharding</li>
+              </ul>
+            </div>
+            <div>
+              <h3>UUIDField</h3>
+              <ul class="tight">
+                <li>128-bit random value</li>
+                <li>Generated client-side</li>
+                <li>No time order</li>
+              </ul>
+            </div>
+            <div>
+              <h3>ObjectIdAutoField</h3>
+              <ul class="tight">
+                <li>12-byte BSON <code>ObjectId</code></li>
+                <li>Timestamp-prefixed — sorts ~chronologically</li>
+                <li>Generated client-side, safe under sharding</li>
+              </ul>
+            </div>
+          </div>
+          <p class="footnote">ObjectId = 4-byte Unix timestamp · 5-byte random · 3-byte counter (12 bytes total).</p>
+          <aside class="notes">
+            Quick callback to DEFAULT_AUTO_FIELD on the previous slide.
+            "Auto" here means auto-generated — not auto-incrementing.
+            Three common options. BigAutoField is a 64-bit integer
+            counter the database hands out — fine on one server,
+            contention under sharding. UUIDField is 128 random bits
+            generated client-side — no central coordination, but no
+            time order either, so "newest first" scans can't ride the
+            primary key.
+
+            On MongoDB you get an ObjectId — 12 bytes generated
+            client-side by the driver. The first 4 bytes are a Unix
+            timestamp, so two ObjectIds made a second apart still sort
+            by time. No central counter to coordinate, so sharded
+            writes scale cleanly. And it's the native _id type on the
+            wire — what mongosh prints, what change streams emit, what
+            the admin uses for object URLs.
+          </aside>
+        </section>
+
+        <!-- 7. Why MongoDB -->
         <section>
           <h2>Why MongoDB?</h2>
           <div class="two-col">
@@ -246,7 +298,7 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 7. Why Django on MongoDB -->
+        <!-- 8. Why Django on MongoDB -->
         <section>
           <h2>Django <em>on</em> MongoDB?</h2>
           <ul class="tight">
@@ -272,7 +324,7 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 8. First model -->
+        <!-- 9. First model -->
         <section>
           <h2>Your first model</h2>
           <pre><code class="language-python" data-trim>
@@ -303,7 +355,7 @@ class Movie(models.Model):
           </aside>
         </section>
 
-        <!-- 9. Embedded models -->
+        <!-- 10. Embedded models -->
         <section>
           <h2>Embedded documents</h2>
           <pre><code class="language-python" data-trim>
@@ -337,7 +389,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 10. Embedded arrays -->
+        <!-- 11. Embedded arrays -->
         <section>
           <h2>Arrays of embedded docs</h2>
           <pre><code class="language-python" data-trim>
@@ -375,7 +427,7 @@ class Order(models.Model):
           </aside>
         </section>
 
-        <!-- 11. Querying -->
+        <!-- 12. Querying -->
         <section>
           <h2>Querying feels like Django</h2>
           <pre><code class="language-python" data-trim>
@@ -405,7 +457,7 @@ print(Movie.objects.filter(year=2024).query)
           </aside>
         </section>
 
-        <!-- 12. Aggregation -->
+        <!-- 13. Aggregation -->
         <section>
           <h2>When you need MQL: <code>raw_aggregate</code></h2>
           <pre><code class="language-python" data-trim>
@@ -434,7 +486,7 @@ for row in Movie.objects.raw_aggregate(pipeline):
           </aside>
         </section>
 
-        <!-- 13. Indexes -->
+        <!-- 14. Indexes -->
         <section>
           <h2>Indexes — including embedded fields</h2>
           <pre><code class="language-python" data-trim>
@@ -465,7 +517,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 14. Unique constraints -->
+        <!-- 15. Unique constraints -->
         <section>
           <h2>Unique constraints, the Mongo way</h2>
           <pre><code class="language-python" data-trim>
@@ -503,7 +555,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 15. Polymorphic embedded -->
+        <!-- 16. Polymorphic embedded -->
         <section>
           <h2>Polymorphic embedded models <span class="pill">6.0.3</span></h2>
           <pre><code class="language-python" data-trim>
@@ -542,7 +594,7 @@ class Invoice(models.Model):
           </aside>
         </section>
 
-        <!-- 16. Queryable Encryption -->
+        <!-- 17. Queryable Encryption -->
         <section>
           <h2>Queryable Encryption <span class="pill">6.0.1</span></h2>
           <ul class="tight">
@@ -575,7 +627,7 @@ class Patient(models.Model):
           </aside>
         </section>
 
-        <!-- 17. Spatial -->
+        <!-- 18. Spatial -->
         <section>
           <h2>Spatial lookups <span class="pill">6.0.1</span></h2>
           <pre><code class="language-python" data-trim>
@@ -602,7 +654,7 @@ Cafe.objects.filter(
           </aside>
         </section>
 
-        <!-- 18. Admin -->
+        <!-- 19. Admin -->
         <section>
           <h2>The Django admin… still works</h2>
           <ul class="tight">
@@ -631,7 +683,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 19. Limitations -->
+        <!-- 20. Limitations -->
         <section>
           <h2>Honest limitations</h2>
           <ul class="tight">
@@ -660,7 +712,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 20. Resources -->
+        <!-- 21. Resources -->
         <section>
           <h2>Resources</h2>
           <ul class="tight">
@@ -684,7 +736,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 21. Thanks -->
+        <!-- 22. Thanks -->
         <section class="title">
           <img class="brand-lockup" src="assets/mongodb/MongoDB_White.svg" alt="MongoDB" style="height: 1.4em;" />
           <h1>Thanks 👋</h1>
