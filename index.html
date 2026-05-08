@@ -274,6 +274,7 @@ INSTALLED_APPS = [
           <pre><code class="language-python" data-trim>
 from django.db import models
 
+
 class Movie(models.Model):
     title = models.CharField(max_length=200)
     year = models.IntegerField()
@@ -305,13 +306,15 @@ class Movie(models.Model):
 from django_mongodb_backend.fields import EmbeddedModelField
 from django_mongodb_backend.models import EmbeddedModel
 
+
 class Address(EmbeddedModel):
     street = models.CharField(max_length=200)
-    city   = models.CharField(max_length=100)
-    zip    = models.CharField(max_length=20)
+    city = models.CharField(max_length=100)
+    zip = models.CharField(max_length=20)
+
 
 class Customer(models.Model):
-    name    = models.CharField(max_length=120)
+    name = models.CharField(max_length=120)
     address = EmbeddedModelField(Address)
           </code></pre>
           <p>One document. No join. <code>customer.address.city</code> just works.</p>
@@ -335,18 +338,21 @@ class Customer(models.Model):
           <h2>Arrays of embedded docs</h2>
           <pre><code class="language-python" data-trim>
 from django_mongodb_backend.fields import (
-    ArrayField, EmbeddedModelArrayField,
+    ArrayField,
+    EmbeddedModelArrayField,
 )
 
+
 class LineItem(EmbeddedModel):
-    sku      = models.CharField(max_length=40)
-    qty      = models.IntegerField()
-    price    = models.DecimalField(max_digits=8, decimal_places=2)
+    sku = models.CharField(max_length=40)
+    qty = models.IntegerField()
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    items    = EmbeddedModelArrayField(LineItem)
-    tags     = ArrayField(models.CharField(max_length=30), default=list)
+    items = EmbeddedModelArrayField(LineItem)
+    tags = ArrayField(models.CharField(max_length=30), default=list)
           </code></pre>
           <p>One round-trip. The whole order — line items, tags — hydrated together.</p>
           <aside class="notes">
@@ -402,7 +408,7 @@ print(Movie.objects.filter(year=2024).query)
 pipeline = [
     {"$match": {"year": {"$gte": 2020}}},
     {"$group": {"_id": "$year", "count": {"$sum": 1}}},
-    {"$sort":  {"_id": -1}},
+    {"$sort": {"_id": -1}},
 ]
 
 for row in Movie.objects.raw_aggregate(pipeline):
@@ -430,8 +436,9 @@ for row in Movie.objects.raw_aggregate(pipeline):
           <pre><code class="language-python" data-trim>
 from django_mongodb_backend.indexes import EmbeddedFieldIndex
 
+
 class Customer(models.Model):
-    name    = models.CharField(max_length=120)
+    name = models.CharField(max_length=120)
     address = EmbeddedModelField(Address)
 
     class Meta:
@@ -461,15 +468,18 @@ class Customer(models.Model):
 from django.db.models import UniqueConstraint
 from django_mongodb_backend.constraints import EmbeddedFieldUniqueConstraint
 
+
 class Customer(models.Model):
-    email   = models.EmailField(null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
     address = EmbeddedModelField(Address)
 
     class Meta:
         constraints = [
             # Multiple NULLs allowed (6.0.2+)
             UniqueConstraint(
-                fields=["email"], name="uniq_email", nulls_distinct=True,
+                fields=["email"],
+                name="uniq_email",
+                nulls_distinct=True,
             ),
             EmbeddedFieldUniqueConstraint("address.zip"),
         ]
@@ -498,14 +508,18 @@ from django_mongodb_backend.fields import (
     PolymorphicEmbeddedModelArrayField,
 )
 
+
 class CardPayment(EmbeddedModel):
     last4 = models.CharField(max_length=4)
+
+
 class WirePayment(EmbeddedModel):
-    iban  = models.CharField(max_length=34)
+    iban = models.CharField(max_length=34)
+
 
 class Invoice(models.Model):
-    payment  = PolymorphicEmbeddedModelField([CardPayment, WirePayment])
-    history  = PolymorphicEmbeddedModelArrayField([CardPayment, WirePayment])
+    payment = PolymorphicEmbeddedModelField([CardPayment, WirePayment])
+    history = PolymorphicEmbeddedModelArrayField([CardPayment, WirePayment])
           </code></pre>
           <p class="footnote">Indexes &amp; unique constraints on polymorphic subfields are also supported.</p>
           <aside class="notes">
@@ -535,9 +549,10 @@ class Invoice(models.Model):
           <pre><code class="language-python" data-trim>
 from django_mongodb_backend.encryption import EncryptedCharField
 
+
 class Patient(models.Model):
     name = models.CharField(max_length=120)
-    ssn  = EncryptedCharField(max_length=11, queries={"queryType": "equality"})
+    ssn = EncryptedCharField(max_length=11, queries={"queryType": "equality"})
           </code></pre>
           <aside class="notes">
             Queryable Encryption is a MongoDB-level feature: fields are
@@ -593,7 +608,9 @@ Cafe.objects.filter(
           </ul>
           <pre><code class="language-python" data-trim>
 # urls.py
-path("orders/&lt;objectid:pk&gt;/", OrderDetail.as_view()),
+urlpatterns = [
+    path("orders/&lt;objectid:pk&gt;/", OrderDetail.as_view()),
+]
           </code></pre>
           <aside class="notes">
             The "still works" is half-joke, half-relief. Django admin is
