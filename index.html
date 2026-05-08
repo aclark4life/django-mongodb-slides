@@ -323,7 +323,126 @@ class BlogConfig(AppConfig):
           </aside>
         </section>
 
-        <!-- 8. Why MongoDB -->
+        <!-- 8. Migrations & MongoDB apps from the project template -->
+        <section>
+          <h2>Migrations &amp; MongoDB apps</h2>
+          <p>What the project template adds to <code>settings.py</code>.</p>
+          <div class="two-col">
+            <div>
+              <h3><code>INSTALLED_APPS</code></h3>
+              <pre><code class="language-python" data-trim>
+INSTALLED_APPS = [
+    "mysite.apps.MongoAdminConfig",
+    "mysite.apps.MongoAuthConfig",
+    "mysite.apps.MongoContentTypesConfig",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django_mongodb_backend",
+]
+              </code></pre>
+              <ul class="tight">
+                <li>Mongo* AppConfigs swap in <code>ObjectIdAutoField</code></li>
+                <li><code>django_mongodb_backend</code> ships checks &amp; commands</li>
+              </ul>
+            </div>
+            <div>
+              <h3><code>MIGRATION_MODULES</code></h3>
+              <pre><code class="language-python" data-trim>
+MIGRATION_MODULES = {
+    "admin": "mongo_migrations.admin",
+    "auth": "mongo_migrations.auth",
+    "contenttypes": "mongo_migrations.contenttypes",
+}
+
+DATABASE_ROUTERS = [
+    "django_mongodb_backend.routers.MongoRouter",
+]
+              </code></pre>
+              <ul class="tight">
+                <li>Re-points contrib migrations at ObjectId-friendly copies</li>
+                <li><code>MongoRouter</code> keeps embedded models off <code>migrate</code></li>
+              </ul>
+            </div>
+          </div>
+          <p class="footnote">All of this is what <code>startproject --template</code> writes for you — but you can add it to an existing project by hand.</p>
+          <aside class="notes">
+            This is the concrete payoff of the project template. Three
+            things it wires up that you'd otherwise do yourself.
+
+            One — INSTALLED_APPS. Instead of django.contrib.admin,
+            .auth, and .contenttypes, the template installs
+            MongoAdminConfig, MongoAuthConfig, and
+            MongoContentTypesConfig from your project's apps.py. They're
+            one-line subclasses that flip default_auto_field to
+            ObjectIdAutoField, so contrib tables get ObjectId PKs
+            instead of BigAutoField. It also adds django_mongodb_backend
+            itself as an app, which registers system checks and
+            management commands.
+
+            Two — MIGRATION_MODULES. The stock auth, admin, and
+            contenttypes migrations assume integer PKs. The template
+            redirects them to a local mongo_migrations package shipped
+            with the backend, which has the same migrations regenerated
+            against ObjectIdAutoField. Without this, the very first
+            migrate would fail.
+
+            Three — DATABASE_ROUTERS. MongoRouter is what teaches
+            Django that embedded models aren't real tables and
+            shouldn't get their own migrate or createcollection calls.
+
+            Bottom line: if you used the template, you already have
+            this. If you're retrofitting an existing project onto
+            MongoDB, these are the four things you copy over.
+          </aside>
+        </section>
+
+
+        <!-- 9. Mongo* AppConfigs (apps.py) -->
+        <section>
+          <h2>The Mongo* AppConfigs</h2>
+          <p>Where those <code>INSTALLED_APPS</code> entries actually live — your project's <code>apps.py</code>.</p>
+          <pre><code class="language-python" data-trim>
+from django.contrib.admin.apps import AdminConfig
+from django.contrib.auth.apps import AuthConfig
+from django.contrib.contenttypes.apps import ContentTypesConfig
+
+
+class MongoAdminConfig(AdminConfig):
+    default_auto_field = "django_mongodb_backend.fields.ObjectIdAutoField"
+
+
+class MongoAuthConfig(AuthConfig):
+    default_auto_field = "django_mongodb_backend.fields.ObjectIdAutoField"
+
+
+class MongoContentTypesConfig(ContentTypesConfig):
+    default_auto_field = "django_mongodb_backend.fields.ObjectIdAutoField"
+          </code></pre>
+          <p class="footnote">Three one-line subclasses — exactly the per-app override pattern from the previous slide.</p>
+          <aside class="notes">
+            This is the file the template drops next to settings.py. It's
+            the smallest possible thing that could work: subclass each
+            contrib AppConfig and override default_auto_field to point
+            at ObjectIdAutoField.
+
+            Why subclass instead of editing the contrib apps directly?
+            Because django.contrib.auth.apps.AuthConfig pins
+            BigAutoField for backwards compatibility, and you can't
+            monkey-patch that without breaking other Django projects in
+            the same interpreter. The override-via-subclass pattern is
+            Django's documented escape hatch — same mechanism a normal
+            app uses to set its own default_auto_field.
+
+            Once these are in INSTALLED_APPS, every model in auth,
+            admin, and contenttypes — User, Group, Permission, LogEntry,
+            ContentType — gets an ObjectId primary key instead of a
+            BigAutoField. Combined with the mongo_migrations modules
+            from the previous slide, the first migrate just works.
+          </aside>
+        </section>
+
+        <!-- 10. Why MongoDB -->
         <section>
           <h2>Why MongoDB?</h2>
           <div class="two-col">
@@ -358,7 +477,7 @@ class BlogConfig(AppConfig):
           </aside>
         </section>
 
-        <!-- 9. Why Django on MongoDB -->
+        <!-- 11. Why Django on MongoDB -->
         <section>
           <h2>Django <em>on</em> MongoDB?</h2>
           <ul class="tight">
@@ -384,7 +503,7 @@ class BlogConfig(AppConfig):
           </aside>
         </section>
 
-        <!-- 10. First model -->
+        <!-- 12. First model -->
         <section>
           <h2>Your first model</h2>
           <pre><code class="language-python" data-trim>
@@ -415,7 +534,7 @@ class Movie(models.Model):
           </aside>
         </section>
 
-        <!-- 11. Embedded models -->
+        <!-- 13. Embedded models -->
         <section>
           <h2>Embedded documents</h2>
           <pre><code class="language-python" data-trim>
@@ -449,7 +568,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 12. Embedded arrays -->
+        <!-- 14. Embedded arrays -->
         <section>
           <h2>Arrays of embedded docs</h2>
           <pre><code class="language-python" data-trim>
@@ -487,7 +606,7 @@ class Order(models.Model):
           </aside>
         </section>
 
-        <!-- 13. Querying -->
+        <!-- 15. Querying -->
         <section>
           <h2>Querying feels like Django</h2>
           <pre><code class="language-python" data-trim>
@@ -517,7 +636,7 @@ print(Movie.objects.filter(year=2024).query)
           </aside>
         </section>
 
-        <!-- 14. Aggregation -->
+        <!-- 16. Aggregation -->
         <section>
           <h2>When you need MQL: <code>raw_aggregate</code></h2>
           <pre><code class="language-python" data-trim>
@@ -546,7 +665,7 @@ for row in Movie.objects.raw_aggregate(pipeline):
           </aside>
         </section>
 
-        <!-- 15. Indexes -->
+        <!-- 17. Indexes -->
         <section>
           <h2>Indexes — including embedded fields</h2>
           <pre><code class="language-python" data-trim>
@@ -577,7 +696,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 16. Unique constraints -->
+        <!-- 18. Unique constraints -->
         <section>
           <h2>Unique constraints, the Mongo way</h2>
           <pre><code class="language-python" data-trim>
@@ -615,7 +734,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 17. Polymorphic embedded -->
+        <!-- 19. Polymorphic embedded -->
         <section>
           <h2>Polymorphic embedded models <span class="pill">6.0.3</span></h2>
           <pre><code class="language-python" data-trim>
@@ -654,7 +773,7 @@ class Invoice(models.Model):
           </aside>
         </section>
 
-        <!-- 18. Queryable Encryption -->
+        <!-- 20. Queryable Encryption -->
         <section>
           <h2>Queryable Encryption <span class="pill">6.0.1</span></h2>
           <ul class="tight">
@@ -687,7 +806,7 @@ class Patient(models.Model):
           </aside>
         </section>
 
-        <!-- 19. Spatial -->
+        <!-- 21. Spatial -->
         <section>
           <h2>Spatial lookups <span class="pill">6.0.1</span></h2>
           <pre><code class="language-python" data-trim>
@@ -714,7 +833,7 @@ Cafe.objects.filter(
           </aside>
         </section>
 
-        <!-- 20. Admin -->
+        <!-- 22. Admin -->
         <section>
           <h2>The Django admin… still works</h2>
           <ul class="tight">
@@ -743,7 +862,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 21. Limitations -->
+        <!-- 23. Limitations -->
         <section>
           <h2>Honest limitations</h2>
           <ul class="tight">
@@ -772,7 +891,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 22. Resources -->
+        <!-- 24. Resources -->
         <section>
           <h2>Resources</h2>
           <ul class="tight">
@@ -796,7 +915,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 23. Thanks -->
+        <!-- 25. Thanks -->
         <section class="title">
           <img class="brand-lockup" src="assets/mongodb/MongoDB_White.svg" alt="MongoDB" style="height: 1.4em;" />
           <h1>Thanks 👋</h1>
