@@ -1,6 +1,7 @@
-default: start
+default:
+    @just --list
 
-start:
+startproject:
     django-admin startproject demo --template templates/project_template
 
 runserver:
