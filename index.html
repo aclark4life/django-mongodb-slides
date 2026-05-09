@@ -57,6 +57,16 @@
       }
       .reveal blockquote { border-left: 4px solid var(--mdb-green); }
 
+      .reveal .copy-btn {
+        margin-top: 0.4em; padding: 0.4em 1em;
+        font: inherit; font-size: 0.5em;
+        background: var(--mdb-green); color: #000;
+        border: none; border-radius: 4px; cursor: pointer;
+      }
+      .reveal .copy-btn:hover, .reveal .copy-btn.copied {
+        background: var(--mdb-green-dark); color: #fff;
+      }
+
       .mdb-watermark {
         position: fixed; bottom: 14px; left: 18px;
         width: 36px; height: 36px; opacity: 0.55;
@@ -140,7 +150,7 @@ pip install django-mongodb-backend
 pip install "django-mongodb-backend==6.0.*"
 
 # Start a project from MongoDB's template
-django-admin startproject mysite \
+django-admin startproject demo \
   --template https://github.com/mongodb-labs/django-mongodb-project/archive/refs/heads/6.0.x.zip
           </code></pre>
           <p class="footnote">The project template wires up <code>DATABASES</code>, <code>DEFAULT_AUTO_FIELD</code>, and migration helpers for you.</p>
@@ -158,8 +168,25 @@ django-admin startproject mysite \
           </aside>
         </section>
 
+        <!-- 4. Start a project -->
+        <section>
+          <h2>Start a project</h2>
+          <p>One command — pre-wired for MongoDB.</p>
+          <pre><code class="language-bash" data-trim>
+django-admin startproject demo \
+  --template https://github.com/mongodb-labs/django-mongodb-project/archive/refs/heads/6.0.x.zip
+          </code></pre>
+          <button class="copy-btn" data-copy>📋 Copy command</button>
+          <aside class="notes">
+            Same command as the install slide, on its own so it's
+            readable from the back of the room — and copyable live.
+            Hit Copy, paste into a terminal, and you have a working
+            Django + MongoDB project in about ten seconds.
+          </aside>
+        </section>
 
-        <!-- 4. settings.py -->
+
+        <!-- 5. settings.py -->
         <section>
           <h2>Configure</h2>
           <pre><code class="language-python" data-trim>
@@ -170,7 +197,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django_mongodb_backend",
         "HOST": os.environ.get("MONGODB_URI", "mongodb://localhost:27017"),
-        "NAME": "mysite",
+        "NAME": "demo",
     },
 }
 
@@ -343,9 +370,9 @@ class BlogConfig(AppConfig):
               <h3><code>INSTALLED_APPS</code></h3>
               <pre><code class="language-python" data-trim>
 INSTALLED_APPS = [
-    "mysite.apps.MongoAdminConfig",
-    "mysite.apps.MongoAuthConfig",
-    "mysite.apps.MongoContentTypesConfig",
+    "demo.apps.MongoAdminConfig",
+    "demo.apps.MongoAuthConfig",
+    "demo.apps.MongoContentTypesConfig",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
@@ -965,6 +992,22 @@ urlpatterns = [
         plugins: [Highlight, Notes],
       });
       deck.initialize();
+
+      document.querySelectorAll('.copy-btn[data-copy]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const code = btn.previousElementSibling?.querySelector('code');
+          if (!code) return;
+          navigator.clipboard.writeText(code.textContent.trim()).then(() => {
+            const orig = btn.textContent;
+            btn.textContent = '✓ Copied';
+            btn.classList.add('copied');
+            setTimeout(() => {
+              btn.textContent = orig;
+              btn.classList.remove('copied');
+            }, 1500);
+          });
+        });
+      });
     </script>
   </body>
 </html>
