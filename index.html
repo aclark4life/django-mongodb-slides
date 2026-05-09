@@ -230,8 +230,8 @@ npx mongodb-runner exec -t standalone -- sh -c 'python manage.py migrate'
           <h2>Inspect with <code>mongosh</code></h2>
           <p>The official MongoDB shell — a JS REPL for ad-hoc queries.</p>
           <pre><code class="language-bash" data-trim>
-# macOS
-brew install mongosh
+# Install via npm
+npm install -g mongosh
 
 # Connect — accepts the same URI as the Django backend
 mongosh "$MONGODB_URI"
@@ -243,7 +243,7 @@ mongosh "$MONGODB_URI" --quiet --eval 'db.getSiblingDB("demo").dropDatabase()'
 # Or pipe through mongodb-runner so MONGODB_URI is set for you
 npx mongodb-runner exec -t standalone -- sh -c 'mongosh $MONGODB_URI'
           </code></pre>
-          <p class="footnote">Replaces the legacy <code>mongo</code> shell. Available via Homebrew, npm, and the MongoDB downloads page.</p>
+          <p class="footnote">Replaces the legacy <code>mongo</code> shell. Also available via Homebrew and the MongoDB downloads page.</p>
           <aside class="notes">
             One more tool while we're in shell-land. mongosh is the
             official MongoDB shell — a JavaScript REPL that replaces the
@@ -260,8 +260,9 @@ npx mongodb-runner exec -t standalone -- sh -c 'mongosh $MONGODB_URI'
             the child process, so you can spin up a server and a shell
             in one command.
 
-            Install via brew on macOS, npm everywhere, or grab a binary
-            from mongodb.com/try/download/shell.
+            Install via npm — same Node toolchain as mongodb-runner,
+            so if you already have one you have the other. Homebrew and
+            the MongoDB downloads page also work.
           </aside>
         </section>
 
