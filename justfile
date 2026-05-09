@@ -2,7 +2,7 @@ default:
     @just --list
 
 startproject:
-    django-admin startproject demo --template templates/project_template
+    django-admin startproject demo -v 3 --template templates/project_template
 
 runserver:
     #!/usr/bin/env bash
