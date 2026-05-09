@@ -185,8 +185,48 @@ django-admin startproject demo \
           </aside>
         </section>
 
+        <!-- 5. Start MongoDB -->
+        <section>
+          <h2>Start MongoDB</h2>
+          <p>Need a local server? <code>mongodb-runner</code> spins one up.</p>
+          <pre><code class="language-bash" data-trim>
+# No install needed — npx fetches it on demand
+npx mongodb-runner start
 
-        <!-- 5. settings.py -->
+# Or a replica set (required for transactions)
+npx mongodb-runner start -t replset
+
+# List what's running, then stop everything
+npx mongodb-runner ls
+npx mongodb-runner stop --all
+
+# Run a command with MONGODB_URI pre-set
+npx mongodb-runner exec -t standalone -- sh -c 'python manage.py migrate'
+          </code></pre>
+          <p class="footnote">Requires Node.js ≥ 20.19. Downloads the MongoDB binary on first run, caches it after. Source: <a href="https://github.com/mongodb-js/devtools-shared/tree/main/packages/mongodb-runner" target="_blank" rel="noopener">mongodb-js/devtools-shared</a>.</p>
+          <aside class="notes">
+            Quick aside before we configure Django. If you don't already
+            have a MongoDB instance handy — no Atlas cluster, no local
+            mongod — mongodb-runner is the fastest way to get one. It's
+            an npm package maintained by the MongoDB tooling team that
+            downloads a server binary, runs it, and hands you a
+            connection string.
+
+            npx mongodb-runner start gives you a standalone on the
+            default port. -t replset gives you a replica set, which you
+            need for multi-document transactions. ls and stop --all do
+            what you'd expect. And exec is the trick I use most: it
+            starts a server, sets MONGODB_URI in the environment, runs
+            your command, then tears the server down on exit. Perfect
+            for CI and for running migrate against a clean database.
+
+            Requires Node 20 or newer. First run downloads the server
+            binary; subsequent runs reuse the cache.
+          </aside>
+        </section>
+
+
+        <!-- 6. settings.py -->
         <section>
           <h2>Configure</h2>
           <pre><code class="language-python" data-trim>
@@ -230,7 +270,7 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 5. Meet the backend -->
+        <!-- 7. Meet the backend -->
         <section>
           <h2>Meet Django MongoDB Backend</h2>
           <ul class="tight">
@@ -257,7 +297,7 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 6. ObjectId primary keys -->
+        <!-- 8. ObjectId primary keys -->
         <section class="dense">
           <h2>ObjectId primary keys</h2>
           <p><code>DEFAULT_AUTO_FIELD</code> picks the field for auto-generated PKs — "auto" means <em>generated</em>, not <em>incremented</em>.</p>
@@ -308,7 +348,7 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 7. Global vs per-app default_auto_field -->
+        <!-- 9. Global vs per-app default_auto_field -->
         <section class="dense">
           <h2>Global vs per-app</h2>
           <p>Set it once in <code>settings.py</code> — or per app in <code>AppConfig</code>.</p>
@@ -361,7 +401,7 @@ class BlogConfig(AppConfig):
           </aside>
         </section>
 
-        <!-- 8. Migrations & MongoDB apps from the project template -->
+        <!-- 10. Migrations & MongoDB apps from the project template -->
         <section class="denser">
           <h2>Migrations &amp; MongoDB apps</h2>
           <p>What the project template adds to <code>settings.py</code>.</p>
@@ -436,7 +476,7 @@ DATABASE_ROUTERS = [
         </section>
 
 
-        <!-- 9. Mongo* AppConfigs (apps.py) -->
+        <!-- 11. Mongo* AppConfigs (apps.py) -->
         <section class="dense">
           <h2>The Mongo* AppConfigs</h2>
           <p>Where those <code>INSTALLED_APPS</code> entries actually live — your project's <code>apps.py</code>.</p>
@@ -480,7 +520,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
           </aside>
         </section>
 
-        <!-- 10. Why MongoDB -->
+        <!-- 12. Why MongoDB -->
         <section>
           <h2>Why MongoDB?</h2>
           <div class="two-col">
@@ -515,7 +555,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
           </aside>
         </section>
 
-        <!-- 11. Why Django on MongoDB -->
+        <!-- 13. Why Django on MongoDB -->
         <section>
           <h2>Django <em>on</em> MongoDB?</h2>
           <ul class="tight">
@@ -541,7 +581,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
           </aside>
         </section>
 
-        <!-- 12. First model -->
+        <!-- 14. First model -->
         <section>
           <h2>Your first model</h2>
           <pre><code class="language-python" data-trim>
@@ -572,7 +612,7 @@ class Movie(models.Model):
           </aside>
         </section>
 
-        <!-- 13. Embedded models -->
+        <!-- 15. Embedded models -->
         <section>
           <h2>Embedded documents</h2>
           <pre><code class="language-python" data-trim>
@@ -606,7 +646,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 14. Embedded arrays -->
+        <!-- 16. Embedded arrays -->
         <section>
           <h2>Arrays of embedded docs</h2>
           <pre><code class="language-python" data-trim>
@@ -644,7 +684,7 @@ class Order(models.Model):
           </aside>
         </section>
 
-        <!-- 15. Querying -->
+        <!-- 17. Querying -->
         <section>
           <h2>Querying feels like Django</h2>
           <pre><code class="language-python" data-trim>
@@ -674,7 +714,7 @@ print(Movie.objects.filter(year=2024).query)
           </aside>
         </section>
 
-        <!-- 16. Aggregation -->
+        <!-- 18. Aggregation -->
         <section>
           <h2>When you need MQL: <code>raw_aggregate</code></h2>
           <pre><code class="language-python" data-trim>
@@ -703,7 +743,7 @@ for row in Movie.objects.raw_aggregate(pipeline):
           </aside>
         </section>
 
-        <!-- 17. Indexes -->
+        <!-- 19. Indexes -->
         <section>
           <h2>Indexes — including embedded fields</h2>
           <pre><code class="language-python" data-trim>
@@ -734,7 +774,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 18. Unique constraints -->
+        <!-- 20. Unique constraints -->
         <section class="dense">
           <h2>Unique constraints</h2>
           <pre><code class="language-python" data-trim>
@@ -772,7 +812,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 19. Polymorphic embedded -->
+        <!-- 21. Polymorphic embedded -->
         <section class="dense">
           <h2>Polymorphic embedded models <span class="pill">6.0.3</span></h2>
           <pre><code class="language-python" data-trim>
@@ -811,7 +851,7 @@ class Invoice(models.Model):
           </aside>
         </section>
 
-        <!-- 20. Queryable Encryption -->
+        <!-- 22. Queryable Encryption -->
         <section>
           <h2>Queryable Encryption <span class="pill">6.0.1</span></h2>
           <ul class="tight">
@@ -844,7 +884,7 @@ class Patient(models.Model):
           </aside>
         </section>
 
-        <!-- 21. Spatial -->
+        <!-- 23. Spatial -->
         <section>
           <h2>Spatial lookups <span class="pill">6.0.1</span></h2>
           <pre><code class="language-python" data-trim>
@@ -871,7 +911,7 @@ Cafe.objects.filter(
           </aside>
         </section>
 
-        <!-- 22. Admin -->
+        <!-- 24. Admin -->
         <section>
           <h2>The Django admin… still works</h2>
           <ul class="tight">
@@ -900,7 +940,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 23. Limitations -->
+        <!-- 25. Limitations -->
         <section>
           <h2>Limitations</h2>
           <ul class="tight">
@@ -929,7 +969,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 24. Resources -->
+        <!-- 26. Resources -->
         <section>
           <h2>Resources</h2>
           <ul class="tight">
@@ -953,7 +993,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 25. Thanks -->
+        <!-- 27. Thanks -->
         <section class="title">
           <img class="brand-lockup" src="assets/mongodb/MongoDB_White.svg" alt="MongoDB" style="height: 1.4em;" />
           <h1>Thanks 👋</h1>
