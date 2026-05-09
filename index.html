@@ -21,6 +21,17 @@
       .reveal a { color: var(--mdb-green); }
       .reveal pre { box-shadow: none; font-size: 0.55em; }
       .reveal pre code { padding: 1em; border-radius: 6px; max-height: 560px; }
+      .reveal section.dense pre { font-size: 0.46em; }
+      .reveal section.dense pre code { padding: 0.7em; }
+      .reveal section.dense .tight li { margin: 0.05em 0; font-size: 0.9em; }
+      .reveal section.dense .three-col h3, .reveal section.dense .two-col h3 { font-size: 0.85em; }
+      .reveal section.dense > p { font-size: 0.85em; }
+      .reveal section.denser pre { font-size: 0.4em; }
+      .reveal section.denser pre code { padding: 0.6em; }
+      .reveal section.denser .tight li { margin: 0.04em 0; font-size: 0.8em; }
+      .reveal section.denser .two-col h3, .reveal section.denser .three-col h3 { font-size: 0.8em; }
+      .reveal section.denser > p { font-size: 0.8em; }
+      .reveal section.denser .footnote { font-size: 0.4em; }
       .reveal :not(pre) > code {
         font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
         font-size: 0.85em;
@@ -220,7 +231,7 @@ INSTALLED_APPS = [
         </section>
 
         <!-- 6. ObjectId primary keys -->
-        <section>
+        <section class="dense">
           <h2>ObjectId primary keys</h2>
           <p><code>DEFAULT_AUTO_FIELD</code> picks the field for auto-generated PKs — "auto" means <em>generated</em>, not <em>incremented</em>.</p>
           <div class="three-col">
@@ -271,7 +282,7 @@ INSTALLED_APPS = [
         </section>
 
         <!-- 7. Global vs per-app default_auto_field -->
-        <section>
+        <section class="dense">
           <h2>Global vs per-app</h2>
           <p>Set it once in <code>settings.py</code> — or per app in <code>AppConfig</code>.</p>
           <div class="two-col">
@@ -324,7 +335,7 @@ class BlogConfig(AppConfig):
         </section>
 
         <!-- 8. Migrations & MongoDB apps from the project template -->
-        <section>
+        <section class="denser">
           <h2>Migrations &amp; MongoDB apps</h2>
           <p>What the project template adds to <code>settings.py</code>.</p>
           <div class="two-col">
@@ -399,7 +410,7 @@ DATABASE_ROUTERS = [
 
 
         <!-- 9. Mongo* AppConfigs (apps.py) -->
-        <section>
+        <section class="dense">
           <h2>The Mongo* AppConfigs</h2>
           <p>Where those <code>INSTALLED_APPS</code> entries actually live — your project's <code>apps.py</code>.</p>
           <pre><code class="language-python" data-trim>
@@ -697,8 +708,8 @@ class Customer(models.Model):
         </section>
 
         <!-- 18. Unique constraints -->
-        <section>
-          <h2>Unique constraints, the Mongo way</h2>
+        <section class="dense">
+          <h2>Unique constraints</h2>
           <pre><code class="language-python" data-trim>
 from django.db.models import UniqueConstraint
 from django_mongodb_backend.constraints import EmbeddedFieldUniqueConstraint
@@ -735,7 +746,7 @@ class Customer(models.Model):
         </section>
 
         <!-- 19. Polymorphic embedded -->
-        <section>
+        <section class="dense">
           <h2>Polymorphic embedded models <span class="pill">6.0.3</span></h2>
           <pre><code class="language-python" data-trim>
 from django_mongodb_backend.fields import (
