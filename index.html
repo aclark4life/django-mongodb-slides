@@ -638,27 +638,27 @@ class MongoContentTypesConfig(ContentTypesConfig):
         </section>
 
         <!-- 12b. What the template does, and why -->
-        <section>
+        <section class="dense">
           <h2>What the template does — and why</h2>
           <div class="two-col">
             <div>
               <h3>What</h3>
               <ul class="tight">
-                <li>Subclasses <code>auth</code>, <code>admin</code>, <code>contenttypes</code> AppConfigs and sets <code>default_auto_field = ObjectIdAutoField</code></li>
-                <li>Re-points <code>MIGRATION_MODULES</code> for those apps at <code>mongo_migrations.*</code> (ObjectId-friendly copies)</li>
+                <li>Subclasses contrib AppConfigs → <code>ObjectIdAutoField</code></li>
+                <li>Redirects <code>MIGRATION_MODULES</code> to <code>mongo_migrations.*</code></li>
                 <li>Adds <code>MongoRouter</code> to <code>DATABASE_ROUTERS</code></li>
               </ul>
             </div>
             <div>
               <h3>Why</h3>
               <ul class="tight">
-                <li>Stock contrib migrations bake in <code>BigAutoField</code> — they'd fail on the first <code>migrate</code></li>
-                <li><code>AuthConfig</code> pins <code>BigAutoField</code>; subclassing is Django's documented escape hatch</li>
-                <li><code>MongoRouter</code> teaches <code>migrate</code> that embedded models aren't real collections</li>
+                <li>Stock migrations bake in <code>BigAutoField</code></li>
+                <li><code>AuthConfig</code> pins it; subclassing is the escape hatch</li>
+                <li>Embedded models aren't real collections</li>
               </ul>
             </div>
           </div>
-          <p class="footnote">Use the template and you get all of this for free. Skip it and these are the four things you copy over by hand.</p>
+          <p class="footnote">Use the template and you get all of this for free.</p>
           <aside class="notes">
             One-slide summary before we leave the setup section. The
             template exists because Django assumes BigAutoField
