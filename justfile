@@ -1,9 +1,6 @@
 default:
     @just --list
 
-startproject:
-    django-admin startproject demo -v 3 --template templates/project_template
-
 _uri:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -12,6 +9,9 @@ _uri:
         URI=$(mongodb-runner start --id demo | tail -n1)
     fi
     echo "$URI"
+
+startproject:
+    django-admin startproject demo -v 3 --template templates/project_template
 
 runserver:
     cd demo && MONGODB_URI="$(just _uri)" python manage.py runserver
