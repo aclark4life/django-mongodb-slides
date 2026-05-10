@@ -34,3 +34,7 @@ migrate:
 # Drop the demo database (handy between demos)
 dropdb:
     mongosh "$(just _uri)" --quiet --eval 'db.getSiblingDB("demo").dropDatabase()'
+
+# Remove the generated demo project directory (start fresh with `just startproject`)
+clean:
+    rm -rf demo
