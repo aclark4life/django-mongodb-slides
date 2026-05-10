@@ -1,3 +1,4 @@
+# List available recipes
 default:
     @just --list
 
@@ -18,14 +19,18 @@ _uri:
     fi
     echo "$URI"
 
+# Scaffold the demo project from the local template
 startproject:
     django-admin startproject demo -v 3 --template templates/project_template
 
+# Run the Django dev server with MONGODB_URI wired up
 runserver:
     cd demo && MONGODB_URI="$(just _uri)" python manage.py runserver
 
+# Apply migrations against the demo database
 migrate:
     cd demo && MONGODB_URI="$(just _uri)" python manage.py migrate
 
+# Drop the demo database (handy between demos)
 dropdb:
     mongosh "$(just _uri)" --quiet --eval 'db.getSiblingDB("demo").dropDatabase()'
