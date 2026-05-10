@@ -1,10 +1,18 @@
 default:
     @just --list
 
+# Print the connection URI for the "demo" mongodb-runner instance,
+# starting one if it isn't already running. Leading underscore hides
+# the recipe from `just --list`. The shebang turns the recipe body
+# into a single bash script (instead of one shell per line) so the
+# variable assignment and the if-block share state.
 _uri:
     #!/usr/bin/env bash
     set -euo pipefail
+    # Look up an already-running instance tagged --id demo.
+    # `mongodb-runner ls` prints "<id>: <uri>" per line; awk pulls the URI.
     URI=$(mongodb-runner ls | awk -F': ' '/^demo: / {print $2}')
+    # Nothing running? Start a fresh instance; its last stdout line is the URI.
     if [ -z "$URI" ]; then
         URI=$(mongodb-runner start --id demo | tail -n1)
     fi
