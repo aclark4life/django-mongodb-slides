@@ -197,7 +197,30 @@ django-admin startproject -v 3 demo \
           </aside>
         </section>
 
-        <!-- 6. Start MongoDB -->
+        <!-- 6. Aside: extra_files -->
+        <section>
+          <h2>Why the empty line?</h2>
+          <p><code>Rendering project template files with filenames:</code> &nbsp;…with nothing after it.</p>
+          <p>Django's <code>TemplateCommand</code> renders a file if either is true:</p>
+          <ul class="tight">
+            <li>Its extension is in <code>--extension</code> (default: <code>py</code>)</li>
+            <li>Its filename is in <code>extra_files</code> — populated via <code>--name</code></li>
+          </ul>
+          <p>Use <code>--name</code> for files without a useful extension:</p>
+          <pre><code class="language-bash" data-trim>
+django-admin startproject -v 3 demo \
+  --name Dockerfile --name Procfile \
+  --template https://github.com/mongodb-labs/django-mongodb-project/archive/refs/heads/6.0.x.zip
+          </code></pre>
+          <aside class="notes">
+            The header prints unconditionally. The MongoDB template doesn't
+            ship any extra_files, so the list is empty. Pass --name to add
+            files like Dockerfile, Procfile, Makefile, or .env.example
+            that still need template variable substitution.
+          </aside>
+        </section>
+
+        <!-- 7. Start MongoDB -->
         <section>
           <h2>Start MongoDB</h2>
           <p>Need a local server? <code>mongodb-runner</code> spins one up.</p>
