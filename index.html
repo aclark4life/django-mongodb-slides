@@ -347,6 +347,67 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
+        <!-- 7b. justfile -->
+        <section class="dense">
+          <h2>One <code>justfile</code> to drive it all</h2>
+          <p><a href="https://github.com/casey/just" target="_blank" rel="noopener"><code>just</code></a> — a command runner. <code>just &lt;recipe&gt;</code> runs the recipe.</p>
+          <div class="two-col">
+            <div>
+              <pre><code class="language-makefile" data-trim>
+default:
+    @just --list
+
+startproject:
+    django-admin startproject demo -v 3 \
+      --template templates/project_template
+
+_uri:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    URI=$(mongodb-runner ls \
+      | awk -F': ' '/^demo: / {print $2}')
+    if [ -z "$URI" ]; then
+        URI=$(mongodb-runner start --id demo \
+              | tail -n1)
+    fi
+    echo "$URI"
+
+runserver:
+    cd demo && MONGODB_URI="$(just _uri)" \
+      python manage.py runserver
+
+migrate:
+    cd demo && MONGODB_URI="$(just _uri)" \
+      python manage.py migrate
+
+dropdb:
+    mongosh "$(just _uri)" --quiet \
+      --eval 'db.getSiblingDB("demo").dropDatabase()'
+              </code></pre>
+            </div>
+            <div>
+              <ul class="tight">
+                <li><code>default</code> — <code>just</code> alone lists every recipe</li>
+                <li><code>startproject</code> — scaffold from a local template</li>
+                <li><code>_uri</code> — private (leading <code>_</code>) bash recipe; reuses a running <code>mongodb-runner</code> instance tagged <code>--id demo</code>, or starts one and prints its URI</li>
+                <li><code>runserver</code> / <code>migrate</code> — wrap Django commands with <code>MONGODB_URI</code> populated via <code>$(just _uri)</code> — the same env var <code>settings.py</code> reads</li>
+                <li><code>dropdb</code> — wipe the database between demos</li>
+              </ul>
+            </div>
+          </div>
+          <aside class="notes">
+            One file, six recipes — the entire dev loop for this talk.
+            The trick is _uri: it's a private recipe (leading underscore
+            keeps it out of --list) that either finds the existing
+            mongodb-runner instance tagged --id demo or starts a fresh
+            one, then prints just the URI. runserver and migrate use
+            shell substitution — $(just _uri) — to inject that URI
+            into MONGODB_URI, which is exactly what settings.py reads on
+            the previous slide. No global env vars, no .env file, no
+            "did I start MongoDB first?" — every recipe is self-contained.
+          </aside>
+        </section>
+
         <!-- 8. Meet the backend -->
         <section>
           <h2>Meet Django MongoDB Backend</h2>
