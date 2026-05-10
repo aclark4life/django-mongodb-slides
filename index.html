@@ -185,7 +185,20 @@ django-admin startproject -v 3 demo \
           </aside>
         </section>
 
-        <!-- 5. Start MongoDB -->
+        <!-- 5. Start a project (output) -->
+        <section>
+          <h2>Start a project</h2>
+          <p>What it looks like.</p>
+          <img src="assets/startproject-screenshot.png" alt="Terminal output of django-admin startproject -v 3" style="max-height: 60vh; border-radius: 6px;" />
+          <aside class="notes">
+            With <code>-v 3</code> you see every file the template renders —
+            settings.py, manage.py, and the MongoDB-specific
+            mongo_migrations for auth, admin, and contenttypes. About a
+            second later you have a working project.
+          </aside>
+        </section>
+
+        <!-- 6. Start MongoDB -->
         <section>
           <h2>Start MongoDB</h2>
           <p>Need a local server? <code>mongodb-runner</code> spins one up.</p>
