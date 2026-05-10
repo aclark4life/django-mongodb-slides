@@ -37,4 +37,4 @@ dropdb:
 
 # Remove the generated demo project directory (start fresh with `just startproject`)
 clean:
-    rm -rf demo
+    rm -rvf demo
