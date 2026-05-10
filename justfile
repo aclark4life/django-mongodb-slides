@@ -38,3 +38,7 @@ dropdb:
 # Remove the generated demo project directory (start fresh with `just startproject`)
 clean:
     rm -rvf demo
+
+# Open the slides in the default browser
+open:
+    open index.html
