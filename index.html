@@ -1506,6 +1506,43 @@ python manage.py create_patients 5
           </aside>
         </section>
 
+        <!-- 26l-bis. Demo: skip the migration, get unencrypted collections -->
+        <section class="dense">
+          <h2>Don't skip <code>migrate&nbsp;--database&nbsp;encrypted</code></h2>
+          <p>If the encrypted collection doesn't exist yet, the first
+          insert creates it — as a plain, <em>unencrypted</em>
+          collection. So <code>create_patients</code> guards against it:</p>
+          <pre><code class="language-python" data-trim>
+def _encrypted_collections_exist(self):
+    conn = connections["encrypted"]
+    conn.ensure_connection()
+    return "medical_records_patient" in conn.database.list_collection_names()
+
+if not options["skip_checks"] and not self._encrypted_collections_exist():
+    self.stderr.write("Encrypted collections do not exist. "
+                      "Run 'manage.py migrate --database encrypted' first.")
+    return
+          </code></pre>
+          <pre><code class="language-bash" data-trim>
+# Demonstrate the foot-gun on purpose:
+python manage.py create_patients 5 --skip-checks
+          </code></pre>
+          <aside class="notes">
+            Queryable Encryption only kicks in when the collection is
+            created with the right encryptedFields metadata — that
+            happens during migrate against the encrypted alias. If you
+            skip that step and just start writing, MongoDB happily
+            creates a vanilla collection on the fly and your SSNs land
+            on disk in plaintext. The management command does a
+            preflight check by listing collection names on the
+            encrypted DB and bailing with a clear error if the patient
+            collection isn't there. --skip-checks bypasses that guard
+            so you can show the failure mode in a demo: drop the
+            encrypted DB, skip migrate, run with --skip-checks, and
+            inspect the resulting collection — no ciphertext.
+          </aside>
+        </section>
+
         <!-- 26l. Demo: wagtail-mongodb-project — overview -->
         <section class="dense">
           <h2>Demo: <code>wagtail-mongodb-project</code></h2>
