@@ -1463,6 +1463,141 @@ python manage.py create_patients 5
           </aside>
         </section>
 
+        <!-- 26l. Demo: wagtail-mongodb-project — overview -->
+        <section>
+          <h2>Demo: <code>wagtail-mongodb-project</code></h2>
+          <p>A Wagtail <code>startproject</code> template wired for MongoDB.</p>
+          <ul class="tight">
+            <li>Mongo-aware AppConfigs for every Wagtail contrib app</li>
+            <li><code>mongo_migrations/</code> pre-baked for taggit + 12 wagtail apps</li>
+            <li><code>EncryptedRouter</code> — auto-routes encrypted models to <code>encrypted</code> DB</li>
+            <li><code>PostgreSQLRouter</code> — opt-in split for hybrid Mongo + Postgres</li>
+            <li><code>manage.py init</code> bootstraps Wagtail root page + default site</li>
+          </ul>
+          <p class="footnote">Source: <a href="https://github.com/mongodb-labs/wagtail-mongodb-project" target="_blank" rel="noopener">github.com/mongodb-labs/wagtail-mongodb-project</a></p>
+          <aside class="notes">
+            Same idea as the django-mongodb-project template earlier in
+            the deck, but for Wagtail. It subclasses every Wagtail
+            contrib AppConfig to ObjectIdAutoField, redirects all the
+            wagtail* migrations to a local mongo_migrations package,
+            ships two routers (one for QE, one for hybrid Postgres), and
+            a tiny init command to recreate Wagtail's root/home/site
+            data — those normally come from data migrations that get
+            skipped when MIGRATION_MODULES is redirected.
+          </aside>
+        </section>
+
+        <!-- 26m. Demo: settings — INSTALLED_APPS + MIGRATION_MODULES -->
+        <section class="denser">
+          <h2><code>settings/base.py</code></h2>
+          <pre><code class="language-python" data-trim>
+INSTALLED_APPS = [
+    "home", "search",
+    "demo.apps.MongoWagtailFormsAppConfig",
+    "demo.apps.MongoWagtailRedirectsAppConfig",
+    "demo.apps.MongoWagtailEmbedsAppConfig",
+    "demo.apps.MongoWagtailUsersAppConfig",
+    "demo.apps.MongoWagtailDocsAppConfig",
+    "demo.apps.MongoWagtailImagesAppConfig",
+    "demo.apps.MongoWagtailSearchAppConfig",
+    "demo.apps.MongoWagtailAdminAppConfig",
+    "demo.apps.MongoWagtailAppConfig",
+    "modelcluster",
+    "demo.apps.MongoTaggitAppConfig",
+    "demo.apps.MongoAdminConfig",
+    "demo.apps.MongoAuthConfig",
+    "demo.apps.MongoContentTypesConfig",
+    # ...
+]
+
+MIGRATION_MODULES = {
+    "admin": "mongo_migrations.admin",
+    "auth": "mongo_migrations.auth",
+    "contenttypes": "mongo_migrations.contenttypes",
+    "taggit": "mongo_migrations.taggit",
+    "wagtailadmin":     "mongo_migrations.wagtailadmin",
+    "wagtailcore":      "mongo_migrations.wagtailcore",
+    "wagtaildocs":      "mongo_migrations.wagtaildocs",
+    "wagtailembeds":    "mongo_migrations.wagtailembeds",
+    "wagtailforms":     "mongo_migrations.wagtailforms",
+    "wagtailimages":    "mongo_migrations.wagtailimages",
+    "wagtailredirects": "mongo_migrations.wagtailredirects",
+    "wagtailsearch":    "mongo_migrations.wagtailsearch",
+    "wagtailusers":     "mongo_migrations.wagtailusers",
+}
+          </code></pre>
+          <p class="footnote">Same pattern as <code>django-mongodb-project</code> — just multiplied across Wagtail's contrib apps.</p>
+          <aside class="notes">
+            Every Wagtail contrib AppConfig gets a one-line subclass
+            that pins default_auto_field to ObjectIdAutoField, and every
+            wagtail* migration package gets redirected to a regenerated
+            ObjectId-friendly copy under mongo_migrations. There's
+            nothing magical here — it's the AppConfig + MIGRATION_MODULES
+            recipe from earlier, applied 13 times.
+          </aside>
+        </section>
+
+        <!-- 26n. Demo: routers.py — EncryptedRouter -->
+        <section class="dense">
+          <h2><code>EncryptedRouter</code></h2>
+          <pre><code class="language-python" data-trim>
+# demo/routers.py
+from django_mongodb_backend.utils import model_has_encrypted_fields
+
+
+class EncryptedRouter:
+    """Route models with encrypted fields to the 'encrypted' DB."""
+
+    def db_for_read(self, model, **hints):
+        if model_has_encrypted_fields(model):
+            return "encrypted"
+        return "default"
+
+    db_for_write = db_for_read
+
+    def allow_migrate(self, db, app_label, model_name=None, **hints):
+        if hints.get("model"):
+            if model_has_encrypted_fields(hints["model"]):
+                return db == "encrypted"
+            return db == "default"
+        return None
+          </code></pre>
+          <p class="footnote">Drop <code>medical_records</code> into this project and its <code>EncryptedCharField</code>s route automatically.</p>
+          <aside class="notes">
+            This is the bridge between the medical-records demo and a
+            real project. model_has_encrypted_fields is a helper from
+            the backend that walks a model's fields looking for any
+            Encrypted* variant. The router uses that to send reads,
+            writes, and migrations for those models to the "encrypted"
+            DATABASES alias, and everything else to default. No app code
+            changes — just install the app and configure the alias.
+          </aside>
+        </section>
+
+        <!-- 26o. Demo: run it -->
+        <section>
+          <h2>Run the wagtail-mongodb-project demo</h2>
+          <pre><code class="language-bash" data-trim>
+# Bootstrap a fresh Wagtail+MongoDB project from the template
+django-admin startproject demo \
+  --template https://github.com/mongodb-labs/wagtail-mongodb-project/archive/refs/heads/main.zip
+
+cd demo
+python manage.py migrate
+python manage.py init                 # root page + default site
+python manage.py createsuperuser
+python manage.py runserver            # /admin/ for Wagtail CMS
+          </code></pre>
+          <aside class="notes">
+            One startproject call, one migrate, one init, and you have
+            a working Wagtail CMS backed by MongoDB. The init command
+            is the only Wagtail-specific extra — it recreates the root
+            page and default Site that Wagtail's data migrations would
+            normally create, but which get skipped when
+            MIGRATION_MODULES redirects wagtailcore to a stub package.
+          </aside>
+        </section>
+
         <!-- 27. Resources -->
         <section>
           <h2>Resources</h2>
