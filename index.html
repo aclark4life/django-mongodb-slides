@@ -1486,20 +1486,23 @@ pip install -e ../medical-records
 
 # settings.py:  INSTALLED_APPS += ["medical_records"]
 #               DATABASES["encrypted"] = {...}   # QE-enabled connection
+#               DATABASE_ROUTERS = ["project.routers.EncryptedRouter"]
 
-python manage.py migrate --database encrypted
+python manage.py migrate                        # default DB: non-encrypted models
+python manage.py migrate --database encrypted   # encrypted DB: Patient, etc.
 python manage.py create_patients 5
 
 # Inspect: ssn + billing are ciphertext on disk,
 # but Patient.objects.filter(patient_record__ssn=...) still works.
           </code></pre>
           <aside class="notes">
-            Two databases: default for non-encrypted models, encrypted for
-            anything that touches QE fields. Migrate against the encrypted
-            alias to create the collection with the right encryption
-            schema, then create_patients seeds a handful of records.
-            Equality queries on ssn still work because EncryptedCharField
-            uses deterministic encryption under the hood.
+            Two databases, two migrate invocations — one per alias. The
+            router's allow_migrate decides which models apply to each
+            invocation: encrypted models only run against the encrypted
+            alias, everything else only against default. create_patients
+            seeds a handful of records. Equality queries on ssn still
+            work because EncryptedCharField uses deterministic
+            encryption under the hood.
           </aside>
         </section>
 
