@@ -511,7 +511,9 @@ dropdb:
             <div>
               <h3><code>settings.py</code></h3>
               <pre><code class="language-python" data-trim>
-DEFAULT_AUTO_FIELD = "django_mongodb_backend.fields.ObjectIdAutoField"
+DEFAULT_AUTO_FIELD = (
+    "django_mongodb_backend.fields.ObjectIdAutoField"
+)
               </code></pre>
               <ul class="tight">
                 <li>Project-wide default</li>
