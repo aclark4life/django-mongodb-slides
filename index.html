@@ -1437,7 +1437,43 @@ patient.save()  # ssn + billing encrypted client-side before the write
           </aside>
         </section>
 
-        <!-- 26k. Demo: run it -->
+        <!-- 26k. Demo: routers.py — EncryptedRouter -->
+        <section class="dense">
+          <h2><code>EncryptedRouter</code></h2>
+          <pre><code class="language-python" data-trim>
+# project/routers.py
+from django_mongodb_backend.utils import model_has_encrypted_fields
+
+
+class EncryptedRouter:
+    """Route models with encrypted fields to the 'encrypted' DB."""
+
+    def db_for_read(self, model, **hints):
+        if model_has_encrypted_fields(model):
+            return "encrypted"
+        return "default"
+
+    db_for_write = db_for_read
+
+    def allow_migrate(self, db, app_label, model_name=None, **hints):
+        if hints.get("model"):
+            if model_has_encrypted_fields(hints["model"]):
+                return db == "encrypted"
+            return db == "default"
+        return None
+          </code></pre>
+          <p class="footnote">Add to <code>DATABASE_ROUTERS</code> and <code>migrate</code> / queries find the right DB on their own — no <code>--database encrypted</code>, no <code>using=</code>.</p>
+          <aside class="notes">
+            model_has_encrypted_fields is a helper from the backend that
+            walks a model's fields looking for any Encrypted* variant.
+            The router uses that to send reads, writes, and migrations
+            for those models to the "encrypted" DATABASES alias, and
+            everything else to default. No app code changes — just
+            install the app and configure the alias.
+          </aside>
+        </section>
+
+        <!-- 26l. Demo: run it -->
         <section>
           <h2>Run the medical-records demo</h2>
           <pre><code class="language-bash" data-trim>
@@ -1470,8 +1506,7 @@ python manage.py create_patients 5
           <ul class="tight">
             <li>Mongo-aware AppConfigs for every Wagtail contrib app</li>
             <li><code>mongo_migrations/</code> pre-baked for taggit + 12 wagtail apps</li>
-            <li><code>EncryptedRouter</code> — auto-routes encrypted models to <code>encrypted</code> DB</li>
-            <li><code>PostgreSQLRouter</code> — opt-in split for hybrid Mongo + Postgres</li>
+            <li>Ships <code>EncryptedRouter</code> (above) and a <code>PostgreSQLRouter</code> for hybrid Mongo + Postgres</li>
             <li><code>manage.py init</code> bootstraps Wagtail root page + default site</li>
           </ul>
           <p class="footnote">Source: <a href="https://github.com/mongodb-labs/wagtail-mongodb-project" target="_blank" rel="noopener">github.com/mongodb-labs/wagtail-mongodb-project</a></p>
@@ -1534,43 +1569,6 @@ MIGRATION_MODULES = {
             ObjectId-friendly copy under mongo_migrations. There's
             nothing magical here — it's the AppConfig + MIGRATION_MODULES
             recipe from earlier, applied 13 times.
-          </aside>
-        </section>
-
-        <!-- 26n. Demo: routers.py — EncryptedRouter -->
-        <section class="dense">
-          <h2><code>EncryptedRouter</code></h2>
-          <pre><code class="language-python" data-trim>
-# demo/routers.py
-from django_mongodb_backend.utils import model_has_encrypted_fields
-
-
-class EncryptedRouter:
-    """Route models with encrypted fields to the 'encrypted' DB."""
-
-    def db_for_read(self, model, **hints):
-        if model_has_encrypted_fields(model):
-            return "encrypted"
-        return "default"
-
-    db_for_write = db_for_read
-
-    def allow_migrate(self, db, app_label, model_name=None, **hints):
-        if hints.get("model"):
-            if model_has_encrypted_fields(hints["model"]):
-                return db == "encrypted"
-            return db == "default"
-        return None
-          </code></pre>
-          <p class="footnote">Drop <code>medical_records</code> into this project and its <code>EncryptedCharField</code>s route automatically.</p>
-          <aside class="notes">
-            This is the bridge between the medical-records demo and a
-            real project. model_has_encrypted_fields is a helper from
-            the backend that walks a model's fields looking for any
-            Encrypted* variant. The router uses that to send reads,
-            writes, and migrations for those models to the "encrypted"
-            DATABASES alias, and everything else to default. No app code
-            changes — just install the app and configure the alias.
           </aside>
         </section>
 
