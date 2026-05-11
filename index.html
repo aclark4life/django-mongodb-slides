@@ -56,6 +56,7 @@
         background: var(--mdb-green-dark); color: #fff; font-size: 0.5em; vertical-align: middle;
       }
       .reveal blockquote { border-left: 4px solid var(--mdb-green); }
+      .reveal .fragment.collapse:not(.visible) { display: none; }
 
       .reveal .copy-btn {
         margin-top: 0.4em; padding: 0.4em 1em;
@@ -390,7 +391,7 @@ dropdb:
         <section>
           <h2>Meet Django MongoDB Backend</h2>
           <ul class="tight">
-            <li>A first-class Django <em>database backend</em><span class="fragment">&nbsp;(not an ODM bolt-on or sidecar)</span></li>
+            <li>A first-class Django <em>database backend</em><span class="fragment collapse">&nbsp;(not an ODM bolt-on or sidecar)</span></li>
             <li>Tracks Django releases: <span class="pill">5.2</span> <span class="pill">6.0</span></li>
             <li>Built on PyMongo</li>
             <li>Translates the ORM to MQL — <code>str(qs.query)</code> prints MQL</li>
