@@ -482,7 +482,7 @@ dropdb:
               </ul>
             </div>
           </div>
-          <p class="footnote" style="white-space: nowrap;">12 bytes: 4-byte timestamp · 5-byte random · 3-byte counter</p>
+          <p class="footnote">ObjectId = 4-byte Unix timestamp · 5-byte random · 3-byte counter (12 bytes total).</p>
           <aside class="notes">
             Quick callback to DEFAULT_AUTO_FIELD on the previous slide.
             "Auto" here means auto-generated — not auto-incrementing.
