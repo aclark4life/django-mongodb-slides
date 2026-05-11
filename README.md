@@ -64,6 +64,16 @@ just clean            # rm -rvf demo
 - [`mongodb-runner`](https://www.npmjs.com/package/mongodb-runner) (Node 20+) for local MongoDB
 - [`mongosh`](https://www.mongodb.com/docs/mongodb-shell/) for `dropdb`
 
+## Resources
+
+- Docs — [django-mongodb-backend.readthedocs.io](https://django-mongodb-backend.readthedocs.io/)
+- Source — [github.com/mongodb/django-mongodb-backend](https://github.com/mongodb/django-mongodb-backend)
+- Project template — [github.com/mongodb-labs/django-mongodb-project](https://github.com/mongodb-labs/django-mongodb-project)
+- Wagtail template — [github.com/aclark4life/wagtail-mongodb-project](https://github.com/aclark4life/wagtail-mongodb-project)
+- `polls` — [github.com/aclark4life/polls](https://github.com/aclark4life/polls)
+- `medical-records` — [github.com/aclark4life/medical-records](https://github.com/aclark4life/medical-records)
+- Atlas free tier — [mongodb.com/atlas](https://www.mongodb.com/atlas)
+
 ## License
 
 MIT.
