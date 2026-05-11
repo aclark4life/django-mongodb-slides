@@ -1603,6 +1603,74 @@ python manage.py runserver            # /admin/ for Wagtail CMS
           </aside>
         </section>
 
+        <!-- 26p. Demo: bakerydemo on top — settings additions -->
+        <section class="denser">
+          <h2>Add <code>bakerydemo</code> on top</h2>
+          <p>The upstream <a href="https://github.com/wagtail/bakerydemo" target="_blank" rel="noopener">wagtail/bakerydemo</a> drops in unmodified.</p>
+          <pre><code class="language-python" data-trim>
+# demo/settings/base.py — extend, don't fork
+INSTALLED_APPS += [
+    "bakerydemo",                  # exposes bakerydemo/templates/
+    "wagtailfontawesomesvg",       # icon pack used by bakerydemo admin
+    "bakerydemo.base",
+    "bakerydemo.blog",
+    "bakerydemo.breads",
+    "bakerydemo.locations",
+    "bakerydemo.people",
+    "bakerydemo.recipes",
+    "bakerydemo.search",
+]
+
+MIGRATION_MODULES.update({
+    "base":      "demo.migrations.bakerydemo_base",
+    "blog":      "demo.migrations.bakerydemo_blog",
+    "breads":    "demo.migrations.bakerydemo_breads",
+    "locations": "demo.migrations.bakerydemo_locations",
+    "people":    "demo.migrations.bakerydemo_people",
+    "recipes":   "demo.migrations.bakerydemo_recipes",
+})
+          </code></pre>
+          <p class="footnote">Same <code>INSTALLED_APPS</code> + <code>MIGRATION_MODULES</code> recipe as Wagtail's own apps — applied to bakerydemo's content apps.</p>
+          <aside class="notes">
+            Nothing about bakerydemo changes. We add its content apps to
+            INSTALLED_APPS and redirect their migration modules to empty
+            in-project packages so makemigrations can regenerate
+            ObjectId-friendly migrations against them. The two
+            non-bakerydemo entries — bakerydemo (the root package) and
+            wagtailfontawesomesvg — are there because bakerydemo keeps
+            templates centrally and uses an SVG icon pack in the admin.
+          </aside>
+        </section>
+
+        <!-- 26q. Demo: run bakerydemo -->
+        <section>
+          <h2>Run bakerydemo on MongoDB</h2>
+          <pre><code class="language-bash" data-trim>
+# Clone upstream bakerydemo (no Mongo fork required)
+git clone https://github.com/wagtail/bakerydemo.git path/to/bakerydemo
+
+# bakerydemo has no pyproject.toml — make it importable via a .pth file
+echo "$(cd path/to/bakerydemo &amp;&amp; pwd)" \
+  > "$(python -c 'import site; print(site.getsitepackages()[0])')/bakerydemo.pth"
+
+cd demo
+python manage.py makemigrations       # generate ObjectId-friendly migrations
+python manage.py migrate
+python manage.py init                 # seeds breads, blog, locations, ...
+python manage.py runserver
+          </code></pre>
+          <aside class="notes">
+            bakerydemo isn't on PyPI and has no setup.py, so we make it
+            importable with a one-line .pth file in the venv's
+            site-packages — Django imports it directly from the clone.
+            makemigrations populates the redirected migration packages
+            with fresh ObjectId-friendly migrations on first run, then
+            it's a no-op. init seeds programmatically because
+            bakerydemo's load_initial_data fixture has integer PKs that
+            don't fit ObjectId.
+          </aside>
+        </section>
+
         <!-- 27. Resources -->
         <section>
           <h2>Resources</h2>
