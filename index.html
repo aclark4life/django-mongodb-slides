@@ -1345,6 +1345,124 @@ python manage.py runserver  # then visit /polls/
           </aside>
         </section>
 
+        <!-- 26h. Demo: medical-records app — overview -->
+        <section>
+          <h2>Demo: <code>medical-records</code> app</h2>
+          <p>A patient records app showcasing MongoDB Queryable Encryption.</p>
+          <ul class="tight">
+            <li><code>EncryptedCharField</code> — <code>PatientRecord.ssn</code></li>
+            <li><code>EncryptedEmbeddedModelField</code> — <code>PatientRecord.billing</code></li>
+            <li><code>EmbeddedModelField</code> — <code>Patient.patient_record</code> (nested doc)</li>
+            <li>Writes/reads via a separate <code>encrypted</code> database alias</li>
+          </ul>
+          <p class="footnote">Source: <a href="https://github.com/aclark4life/medical-records" target="_blank" rel="noopener">github.com/aclark4life/medical-records</a></p>
+          <aside class="notes">
+            Same shape as polls — one pip-installable app — but the focus
+            here is field-level encryption. SSN and billing live inside
+            an embedded PatientRecord and are encrypted client-side via
+            libmongocrypt before they ever hit the wire. The host project
+            wires up an "encrypted" DATABASES alias that points at the
+            QE-aware connection.
+          </aside>
+        </section>
+
+        <!-- 26i. Demo: medical_records/models.py -->
+        <section class="denser">
+          <h2><code>medical_records/models.py</code></h2>
+          <pre><code class="language-python" data-trim>
+from django.db import models
+from django_mongodb_backend.models import EmbeddedModel
+from django_mongodb_backend.fields import (
+    EmbeddedModelField,
+    EncryptedEmbeddedModelField,
+    EncryptedCharField,
+)
+
+
+class Patient(models.Model):
+    patient_name = models.CharField(max_length=255)
+    patient_id = models.BigIntegerField()
+    patient_record = EmbeddedModelField("PatientRecord")
+
+
+class PatientRecord(EmbeddedModel):
+    ssn = EncryptedCharField(max_length=11)
+    billing = EncryptedEmbeddedModelField("Billing")
+    bill_amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+class Billing(EmbeddedModel):
+    cc_type = models.CharField(max_length=50)
+    cc_number = models.CharField(max_length=20)
+          </code></pre>
+          <p class="footnote">Encrypted fields are declared like any other field — no schema gymnastics in app code.</p>
+          <aside class="notes">
+            Three classes: a top-level Patient with an embedded
+            PatientRecord, and a Billing embedded inside the record. The
+            sensitive bits — ssn and the whole billing sub-document — use
+            the Encrypted* field variants. Everything else is stock Django.
+          </aside>
+        </section>
+
+        <!-- 26j. Demo: seeding encrypted patients -->
+        <section class="dense">
+          <h2>Seeding encrypted patients</h2>
+          <pre><code class="language-python" data-trim>
+# medical_records/management/commands/create_patients.py
+from medical_records.models import Patient, PatientRecord, Billing
+
+billing = Billing(
+    cc_type=fake.credit_card_provider(),
+    cc_number=fake.credit_card_number(),
+)
+record = PatientRecord(
+    ssn=fake.ssn(),
+    billing=billing,
+    bill_amount=round(random.uniform(50.0, 5000.0), 2),
+)
+patient = Patient(
+    patient_name=fake.name(),
+    patient_id=random.randint(100000, 999999),
+    patient_record=record,
+)
+patient.save()  # ssn + billing encrypted client-side before the write
+          </code></pre>
+          <p class="footnote">App code is unchanged — encryption happens transparently in the driver.</p>
+          <aside class="notes">
+            The whole point: you build the Python objects exactly the way
+            you would without QE. libmongocrypt encrypts the marked fields
+            before they leave the client, and decrypts them on read. The
+            stored documents in MongoDB show ciphertext for ssn and the
+            billing sub-doc; bill_amount and patient_name stay readable.
+          </aside>
+        </section>
+
+        <!-- 26k. Demo: run it -->
+        <section>
+          <h2>Run the medical-records demo</h2>
+          <pre><code class="language-bash" data-trim>
+# In your django-mongodb-backend project
+pip install -e ../medical-records
+
+# settings.py:  INSTALLED_APPS += ["medical_records"]
+#               DATABASES["encrypted"] = {...}   # QE-enabled connection
+
+python manage.py migrate --database encrypted
+python manage.py create_patients 5
+
+# Inspect: ssn + billing are ciphertext on disk,
+# but Patient.objects.filter(patient_record__ssn=...) still works.
+          </code></pre>
+          <aside class="notes">
+            Two databases: default for non-encrypted models, encrypted for
+            anything that touches QE fields. Migrate against the encrypted
+            alias to create the collection with the right encryption
+            schema, then create_patients seeds a handful of records.
+            Equality queries on ssn still work because EncryptedCharField
+            uses deterministic encryption under the hood.
+          </aside>
+        </section>
+
         <!-- 27. Resources -->
         <section>
           <h2>Resources</h2>
