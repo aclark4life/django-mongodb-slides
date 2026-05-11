@@ -391,14 +391,17 @@ dropdb:
         <section>
           <h2>Meet Django MongoDB Backend</h2>
           <ul class="tight">
-            <li>Built on PyMongo</li>
+            <li>Built on PyMongo
+              <ul class="tight">
+                <li class="fragment collapse">Tracks Django releases: <span class="pill">5.2</span> <span class="pill">6.0</span></li>
+              </ul>
+            </li>
             <li>A first-class Django database backend
               <ul class="tight">
                 <li class="fragment collapse">Not an ODM bolt-on or sidecar</li>
                 <li class="fragment collapse">Listed in Django's <a href="https://docs.djangoproject.com/en/6.0/ref/databases/#third-party-notes" target="_blank" rel="noopener">third-party database backends</a></li>
               </ul>
             </li>
-            <li>Tracks Django releases: <span class="pill">5.2</span> <span class="pill">6.0</span></li>
             <li>Translates the ORM to MQL — <code>str(qs.query)</code> prints MQL</li>
           </ul>
           <aside class="notes">
