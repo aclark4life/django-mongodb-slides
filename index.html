@@ -357,15 +357,6 @@ INSTALLED_APPS = [
 default:
     @just --list
 
-_uri:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    URI=$(mongodb-runner ls | awk -F': ' '/^demo: / {print $2}')
-    if [ -z "$URI" ]; then
-        URI=$(mongodb-runner start --id demo | tail -n1)
-    fi
-    echo "$URI"
-
 startproject:
     django-admin startproject demo -v 3 --template templates/project_template
 
@@ -378,15 +369,17 @@ migrate:
 dropdb:
     mongosh "$(just _uri)" --quiet --eval 'db.getSiblingDB("demo").dropDatabase()'
           </code></pre>
+          <p class="footnote"><code>$(just _uri)</code> calls a private recipe that finds (or starts) a <code>mongodb-runner</code> instance and prints its URI.</p>
           <aside class="notes">
-            One file, six recipes — the entire dev loop for this talk.
-            The trick is _uri: it's a private recipe (leading underscore
-            keeps it out of --list) that either finds the existing
-            mongodb-runner instance tagged --id demo or starts a fresh
-            one, then prints just the URI. runserver and migrate use
-            shell substitution — $(just _uri) — to inject that URI
-            into MONGODB_URI, which is exactly what settings.py reads on
-            the previous slide.
+            One file, a handful of recipes — the entire dev loop for this
+            talk. runserver and migrate use shell substitution —
+            $(just _uri) — to inject the MongoDB URI into MONGODB_URI,
+            which is exactly what settings.py reads on the previous
+            slide. _uri is a private recipe (leading underscore keeps it
+            out of --list) that either finds an existing mongodb-runner
+            instance tagged --id demo or starts a fresh one. It's in the
+            actual justfile in the repo; I left it off this slide to
+            keep things readable.
           </aside>
         </section>
 
