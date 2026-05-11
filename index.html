@@ -1117,6 +1117,194 @@ urlpatterns = [
           </aside>
         </section>
 
+        <!-- 26b. Demo: polls app — overview -->
+        <section>
+          <h2>Demo: <code>polls</code> app</h2>
+          <p>The Django tutorial's polls app, ported to <code>django-mongodb-backend</code>.</p>
+          <ul class="tight">
+            <li><code>EmbeddedModel</code> + <code>EmbeddedModelArrayField</code> — <code>Choice</code> embedded in <code>Question.choices</code></li>
+            <li><code>ArrayField</code> — <code>Question.tags</code></li>
+            <li><code>ObjectIdAutoField</code> — set on <code>PollsConfig</code></li>
+            <li><code>MongoManager.raw_aggregate</code> — analytics view</li>
+            <li><code>SearchIndex</code> + <code>SearchText</code> — Atlas Search, with <code>__icontains</code> fallback</li>
+          </ul>
+          <p class="footnote">Source: <a href="https://github.com/aclark4life/mongodb/tree/main/polls" target="_blank" rel="noopener">github.com/aclark4life/mongodb/tree/main/polls</a></p>
+          <aside class="notes">
+            One small app that exercises most of what we covered. Embedded
+            models, an ArrayField, a Mongo-aware manager, an aggregation
+            view, and Atlas Search with a fallback for local replica sets.
+            Pip-installable, drops into any django-mongodb-backend project.
+          </aside>
+        </section>
+
+        <!-- 26c. Demo: models.py -->
+        <section class="dense">
+          <h2><code>polls/models.py</code></h2>
+          <pre><code class="language-python" data-trim>
+from django.db import models
+from django_mongodb_backend.fields import ArrayField, EmbeddedModelArrayField
+from django_mongodb_backend.indexes import SearchIndex
+from django_mongodb_backend.managers import MongoManager
+from django_mongodb_backend.models import EmbeddedModel
+
+
+class Choice(EmbeddedModel):
+    choice_text = models.CharField(max_length=200)
+    votes = models.IntegerField(default=0)
+
+
+class Question(models.Model):
+    question_text = models.CharField(max_length=200)
+    pub_date = models.DateTimeField("date published")
+    choices = EmbeddedModelArrayField(Choice, blank=True, default=list)
+    tags = ArrayField(models.CharField(max_length=50), blank=True, default=list)
+
+    objects = MongoManager()
+
+    class Meta:
+        indexes = [
+            SearchIndex(
+                name="polls_question_search",
+                field_mappings={
+                    "question_text": {"type": "string"},
+                    "tags": {"type": "string"},
+                },
+            ),
+        ]
+          </code></pre>
+          <p class="footnote">One collection, one document per question — choices and tags live inside.</p>
+          <aside class="notes">
+            Three MongoDB-specific things in one file: Choice as an
+            embedded model, choices as an array of embedded Choices, and
+            tags as a plain ArrayField of strings. MongoManager unlocks
+            raw_aggregate, and the SearchIndex declares an Atlas Search
+            index on question_text and tags.
+          </aside>
+        </section>
+
+        <!-- 26d. Demo: voting on an embedded Choice -->
+        <section class="dense">
+          <h2>Voting on an embedded <code>Choice</code></h2>
+          <pre><code class="language-python" data-trim>
+def vote(request, pk):
+    question = get_object_or_404(Question, pk=pk)
+    try:
+        index = int(request.POST["choice"])
+        choice = question.choices[index]
+    except (KeyError, ValueError, IndexError):
+        return HttpResponseRedirect(reverse("polls:detail", args=(question.pk,)))
+    choice.votes = (choice.votes or 0) + 1
+    question.choices[index] = choice
+    question.save()
+    return HttpResponseRedirect(reverse("polls:results", args=(question.pk,)))
+          </code></pre>
+          <p>Mutate the embedded <code>Choice</code> in place, reassign it, save the parent.</p>
+          <aside class="notes">
+            No second collection, no foreign key, no separate save. Pull
+            the Choice out of the array by index, bump its votes,
+            reassign it, and save the Question. One round-trip writes the
+            whole document back. Caveat: the form identifies the choice
+            by list index, so don't reorder the array between GET and
+            POST.
+          </aside>
+        </section>
+
+        <!-- 26e. Demo: AnalyticsView with raw_aggregate -->
+        <section class="dense">
+          <h2><code>raw_aggregate</code> in a view</h2>
+          <pre><code class="language-python" data-trim>
+class AnalyticsView(TemplateView):
+    template_name = "polls/analytics.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        pipeline = [
+            {"$project": {
+                "question_text": 1, "pub_date": 1, "choices": 1, "tags": 1,
+                "year":  {"$year": "$pub_date"},
+                "votes": {"$sum": "$choices.votes"},
+            }},
+            {"$sort": {"pub_date": -1}},
+        ]
+        questions = list(Question.objects.raw_aggregate(pipeline))
+        per_year = {}
+        for q in questions:
+            per_year.setdefault(q.year, 0)
+            per_year[q.year] += q.votes
+        ctx["questions"] = questions
+        ctx["per_year"] = sorted(per_year.items())
+        return ctx
+          </code></pre>
+          <p class="footnote"><code>$sum: "$choices.votes"</code> sums across the embedded array — no extra queries.</p>
+          <aside class="notes">
+            When the ORM doesn't reach far enough, raw_aggregate hands
+            you a pipeline. Here we project a year and a per-question
+            vote total summed across the embedded choices array, then
+            roll up to per-year totals in Python. Results come back as
+            Question instances with extra attributes attached.
+          </aside>
+        </section>
+
+        <!-- 26f. Demo: Atlas Search with fallback -->
+        <section class="dense">
+          <h2>Atlas Search with a fallback</h2>
+          <pre><code class="language-python" data-trim>
+class SearchView(TemplateView):
+    template_name = "polls/search.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        q = (self.request.GET.get("q") or "").strip()
+        ctx["q"], ctx["results"], ctx["mode"] = q, [], "none"
+        if not q:
+            return ctx
+        try:
+            from django_mongodb_backend.expressions.search import SearchText
+            ctx["results"] = list(
+                Question.objects.annotate(_search=SearchText("polls_question_search", q))
+            )
+            ctx["mode"] = "atlas"
+        except Exception:
+            ctx["results"] = list(Question.objects.filter(question_text__icontains=q))
+            ctx["mode"] = "fallback"
+        return ctx
+          </code></pre>
+          <p class="footnote">Atlas: <code>$search</code>. Local replica set: <code>__icontains</code> + a banner.</p>
+          <aside class="notes">
+            On Atlas, SearchText hits the polls_question_search index we
+            declared in models.py. On a local replica set $search isn't
+            available, so we degrade to __icontains and surface that in
+            the template via the mode flag. Same view, two backends, no
+            crash on dev.
+          </aside>
+        </section>
+
+        <!-- 26g. Demo: run it -->
+        <section>
+          <h2>Run the polls demo</h2>
+          <pre><code class="language-bash" data-trim>
+# In your django-mongodb-backend project
+pip install -e ../polls
+
+# settings.py:  INSTALLED_APPS += ["polls"]
+# urls.py:      path("polls/", include("polls.urls"))
+
+python manage.py makemigrations polls
+python manage.py migrate
+python manage.py seed_polls
+python manage.py create_polls_search_index   # Atlas only
+
+python manage.py runserver  # then visit /polls/
+          </code></pre>
+          <aside class="notes">
+            seed_polls drops in a few sample Questions with embedded
+            Choices and tags. create_polls_search_index talks to Atlas
+            via the schema editor and is a no-op on local replica sets.
+            Visit /polls/ for the index, /polls/search/?q=django for
+            search, /polls/analytics/ for the aggregation view.
+          </aside>
+        </section>
+
         <!-- 27. Resources -->
         <section>
           <h2>Resources</h2>
