@@ -414,6 +414,35 @@ dropdb:
           </aside>
         </section>
 
+        <!-- 8b. ORM → MQL -->
+        <section>
+          <h2>ORM <span class="accent">→</span> MQL</h2>
+          <p>As of 6.0, <code>str(qs.query)</code> prints the aggregation pipeline.</p>
+          <pre><code class="language-python" data-trim>
+&gt;&gt;&gt; qs = (Question.objects
+...         .filter(question_text__icontains="mongo")
+...         .order_by("-pub_date")[:5])
+&gt;&gt;&gt; print(qs.query)
+[
+  {'$match': {'$expr': {'$regexMatch': {
+      'input': '$question_text', 'regex': 'mongo', 'options': 'i'}}}},
+  {'$sort': {'pub_date': -1}},
+  {'$limit': 5}
+]
+          </code></pre>
+          <p class="footnote">Each node in Django's query tree gets an <code>as_mql()</code> method (mirroring <code>as_sql()</code>); the compiler walks the tree to build the pipeline. Use <code>qs.explain()</code> for the executed plan.</p>
+          <aside class="notes">
+            Quick proof of the "translates the ORM to MQL" claim. Build any
+            queryset, print its query attribute, and you get the actual
+            aggregation pipeline the backend will hand to PyMongo. icontains
+            becomes a $regexMatch with the i option, order_by becomes $sort,
+            slicing becomes $limit. This landed in the 6.0 release — earlier
+            versions printed SQL-ish output. For the executed plan with index
+            choice and stats, use qs.explain(), which returns a JSON-parseable
+            string.
+          </aside>
+        </section>
+
         <!-- 9. ObjectId primary keys -->
         <section class="dense">
           <h2>ObjectId primary keys</h2>
