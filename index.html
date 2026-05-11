@@ -1462,7 +1462,7 @@ class EncryptedRouter:
             return db == "default"
         return None
           </code></pre>
-          <p class="footnote">Add to <code>DATABASE_ROUTERS</code> — reads/writes find the right DB automatically (no <code>using=</code>). Migrations still run per-database: <code>migrate</code> + <code>migrate --database encrypted</code>; <code>allow_migrate</code> just decides which models apply to each.</p>
+          <p class="footnote" style="font-size: 0.35em;">Add to <code>DATABASE_ROUTERS</code> — reads/writes find the right DB automatically (no <code>using=</code>). Migrations still run per-database: <code>migrate</code> + <code>migrate --database encrypted</code>; <code>allow_migrate</code> just decides which models apply to each.</p>
           <aside class="notes">
             model_has_encrypted_fields is a helper from the backend that
             walks a model's fields looking for any Encrypted* variant.
