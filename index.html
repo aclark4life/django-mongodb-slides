@@ -911,8 +911,9 @@ pipeline = [
     {"$sort": {"_id": -1}},
 ]
 
-for row in Movie.objects.raw_aggregate(pipeline):
-    print(row)
+qs = Movie.objects.raw_aggregate(pipeline)  # returns a QuerySet
+for row in qs:                               # row is a Movie instance
+    print(row.year, row.count)               # _id + annotated fields
           </code></pre>
           <p>Full power of the aggregation framework — <code>$lookup</code>, <code>$search</code>, <code>$vectorSearch</code>, …</p>
           <aside class="notes">
