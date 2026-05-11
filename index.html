@@ -227,18 +227,21 @@ django-admin startproject -v 3 demo \
           <h2>Start MongoDB</h2>
           <p>Need a local server? <code>mongodb-runner</code> spins one up.</p>
           <pre><code class="language-bash" data-trim>
-# No install needed — npx fetches it on demand
-npx mongodb-runner start
+# Install once
+npm install -g mongodb-runner
+
+# Standalone server on the default port
+mongodb-runner start
 
 # Or a replica set (required for transactions)
-npx mongodb-runner start -t replset
+mongodb-runner start -t replset
 
 # List what's running, then stop everything
-npx mongodb-runner ls
-npx mongodb-runner stop --all
+mongodb-runner ls
+mongodb-runner stop --all
 
 # Run a command with MONGODB_URI pre-set
-npx mongodb-runner exec -t standalone -- sh -c 'python manage.py migrate'
+mongodb-runner exec -t standalone -- sh -c 'python manage.py migrate'
           </code></pre>
           <p class="footnote">Requires Node.js ≥ 20.19. Downloads the MongoDB binary on first run, caches it after. Source: <a href="https://github.com/mongodb-js/devtools-shared/tree/main/packages/mongodb-runner" target="_blank" rel="noopener">mongodb-js/devtools-shared</a>.</p>
           <aside class="notes">
@@ -249,13 +252,13 @@ npx mongodb-runner exec -t standalone -- sh -c 'python manage.py migrate'
             downloads a server binary, runs it, and hands you a
             connection string.
 
-            npx mongodb-runner start gives you a standalone on the
-            default port. -t replset gives you a replica set, which you
-            need for multi-document transactions. ls and stop --all do
-            what you'd expect. And exec is the trick I use most: it
-            starts a server, sets MONGODB_URI in the environment, runs
-            your command, then tears the server down on exit. Perfect
-            for CI and for running migrate against a clean database.
+            mongodb-runner start gives you a standalone on the default
+            port. -t replset gives you a replica set, which you need
+            for multi-document transactions. ls and stop --all do what
+            you'd expect. And exec is the trick I use most: it starts a
+            server, sets MONGODB_URI in the environment, runs your
+            command, then tears the server down on exit. Perfect for CI
+            and for running migrate against a clean database.
 
             Requires Node 20 or newer. First run downloads the server
             binary; subsequent runs reuse the cache.
@@ -267,7 +270,7 @@ npx mongodb-runner exec -t standalone -- sh -c 'python manage.py migrate'
           <h2>Inspect with <code>mongosh</code></h2>
           <p>The official MongoDB shell — a JS REPL for ad-hoc queries.</p>
           <pre><code class="language-bash" data-trim>
-# Install via npm
+# Install once  (or `brew install mongosh`)
 npm install -g mongosh
 
 # Connect — accepts the same URI as the Django backend
@@ -278,7 +281,7 @@ mongosh "$MONGODB_URI" --quiet --eval 'db.movie.find({ year: 2024 })'
 mongosh "$MONGODB_URI" --quiet --eval 'db.getSiblingDB("demo").dropDatabase()'
 
 # Or pipe through mongodb-runner so MONGODB_URI is set for you
-npx mongodb-runner exec -t standalone -- sh -c 'mongosh $MONGODB_URI'
+mongodb-runner exec -t standalone -- sh -c 'mongosh $MONGODB_URI'
           </code></pre>
           <p class="footnote">Replaces the legacy <code>mongo</code> shell. Also available via Homebrew and the MongoDB downloads page.</p>
           <aside class="notes">
