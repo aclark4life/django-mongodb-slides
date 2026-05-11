@@ -1462,14 +1462,18 @@ class EncryptedRouter:
             return db == "default"
         return None
           </code></pre>
-          <p class="footnote">Add to <code>DATABASE_ROUTERS</code> and <code>migrate</code> / queries find the right DB on their own — no <code>--database encrypted</code>, no <code>using=</code>.</p>
+          <p class="footnote">Add to <code>DATABASE_ROUTERS</code> — reads/writes find the right DB automatically (no <code>using=</code>). Migrations still run per-database: <code>migrate</code> + <code>migrate --database encrypted</code>; <code>allow_migrate</code> just decides which models apply to each.</p>
           <aside class="notes">
             model_has_encrypted_fields is a helper from the backend that
             walks a model's fields looking for any Encrypted* variant.
-            The router uses that to send reads, writes, and migrations
-            for those models to the "encrypted" DATABASES alias, and
-            everything else to default. No app code changes — just
-            install the app and configure the alias.
+            db_for_read / db_for_write let queries skip the explicit
+            using=. allow_migrate doesn't run migrations across
+            databases — Django's migrate command operates on one DB at
+            a time, defaulting to default — but it does control which
+            models get applied when you do run migrate against a given
+            alias. So you still invoke migrate twice (once per alias),
+            but each invocation only touches the models that belong on
+            that alias.
           </aside>
         </section>
 
