@@ -19,9 +19,9 @@ _uri:
     fi
     echo "$URI"
 
-# Scaffold the demo project from the local template
+# Scaffold the demo project from the mongodb-labs/dbx-python-cli template
 startproject:
-    django-admin startproject demo -v 3 --template templates/project_template
+    django-admin startproject demo -v 3 --template https://github.com/mongodb-labs/dbx-python-cli/archive/refs/heads/main.zip
 
 # Run the Django dev server with MONGODB_URI wired up
 runserver:
