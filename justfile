@@ -43,8 +43,9 @@ polls:
                  "path('admin/', admin.site.urls),\n    path('polls/', include('polls.urls')),")
     )
     uri = subprocess.check_output(["just", "_uri"]).decode().strip()
-    subprocess.run(["python", "manage.py", "seed_polls"], cwd="demo",
-                   env={**os.environ, "MONGODB_URI": uri}, check=True)
+    env = {**os.environ, "MONGODB_URI": uri}
+    subprocess.run(["python", "manage.py", "migrate"], cwd="demo", env=env, check=True)
+    subprocess.run(["python", "manage.py", "seed_polls"], cwd="demo", env=env, check=True)
 
 # Run the Django dev server with MONGODB_URI wired up
 runserver:
