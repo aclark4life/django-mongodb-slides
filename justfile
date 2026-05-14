@@ -25,10 +25,10 @@ startproject:
     python3 -c "p='demo/demo/settings.py'; s=open(p).read(); open(p,'w').write('import os\n'+s)"
     sed -i '' "s|'HOST': 'mongodb://localhost:27017/'|'HOST': os.environ.get('MONGODB_URI', 'mongodb://localhost:27017')|" demo/demo/settings.py
 
-# Install polls and wire it into the demo project's settings + urls
+# Install polls, wire it into the demo project's settings + urls, and seed data
 polls:
     #!/usr/bin/env python3
-    import subprocess, pathlib
+    import os, pathlib, subprocess
     subprocess.run(["pip", "install", "-e", "../mongodb/polls"], check=True)
     s = pathlib.Path("demo/demo/settings.py")
     s.write_text(s.read_text().replace(
@@ -42,6 +42,9 @@ polls:
         .replace("path('admin/', admin.site.urls),",
                  "path('admin/', admin.site.urls),\n    path('polls/', include('polls.urls')),")
     )
+    uri = subprocess.check_output(["just", "_uri"]).decode().strip()
+    subprocess.run(["python", "manage.py", "seed_polls"], cwd="demo",
+                   env={**os.environ, "MONGODB_URI": uri}, check=True)
 
 # Run the Django dev server with MONGODB_URI wired up
 runserver:
