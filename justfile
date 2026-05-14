@@ -32,15 +32,13 @@ polls:
     subprocess.run(["pip", "install", "-e", "../mongodb/polls"], check=True)
     s = pathlib.Path("demo/demo/settings.py")
     s.write_text(s.read_text().replace(
-        '"django_mongodb_backend",',
-        '"django_mongodb_backend",\n    "polls",'
+        "'django_mongodb_backend',",
+        "'django_mongodb_backend',\n    'polls',"
     ))
     u = pathlib.Path("demo/demo/urls.py")
     u.write_text(u.read_text()
-        .replace("from django.urls import path",
-                 "from django.urls import include, path")
-        .replace('path("admin/", admin.site.urls),',
-                 'path("admin/", admin.site.urls),\n    path("polls/", include("polls.urls")),')
+        .replace("path('admin/', admin.site.urls),",
+                 "path('admin/', admin.site.urls),\n    path('polls/', include('polls.urls')),")
     )
 
 # Run the Django dev server with MONGODB_URI wired up
