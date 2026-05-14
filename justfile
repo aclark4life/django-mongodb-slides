@@ -22,6 +22,7 @@ _uri:
 # Scaffold the demo project from the mongodb-labs/django-mongodb-project template
 startproject:
     django-admin startproject demo -v 3 --template https://github.com/mongodb-labs/django-mongodb-project/archive/refs/heads/6.0.x.zip
+    python3 -c "p='demo/demo/settings.py'; s=open(p).read(); open(p,'w').write('import os\n'+s)"
     sed -i '' "s|'HOST': 'mongodb://localhost:27017/'|'HOST': os.environ.get('MONGODB_URI', 'mongodb://localhost:27017')|" demo/demo/settings.py
 
 # Run the Django dev server with MONGODB_URI wired up
