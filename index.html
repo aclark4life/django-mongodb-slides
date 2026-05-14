@@ -150,23 +150,10 @@ pip install django-mongodb-backend
 
 # Or pick the version matching your Django version
 pip install "django-mongodb-backend==6.0.*"
-
-# Start a project from MongoDB's template
-django-admin startproject demo \
-  --template https://github.com/mongodb-labs/django-mongodb-project/archive/refs/heads/6.0.x.zip
           </code></pre>
-          <p class="footnote">The project template wires up <code>DATABASES</code>, <code>DEFAULT_AUTO_FIELD</code>, and migration helpers for you.</p>
           <aside class="notes">
             Two commands and you're moving. Pip install with a version pin
-            that matches your Django series — 6.0.* tracks Django 6.0. Then
-            the project template: django-admin startproject pointing at
-            MongoDB's template repository on GitHub.
-
-            The template isn't strictly required, but it saves you ten
-            minutes of fiddling — it pre-fills DATABASES with your
-            connection string, sets DEFAULT_AUTO_FIELD to ObjectId, and
-            patches a couple of migration helpers. If you're starting a
-            new project, just use it.
+            that matches your Django series — 6.0.* tracks Django 6.0.
           </aside>
         </section>
 
@@ -179,6 +166,7 @@ django-admin startproject -v 3 demo \
   --template https://github.com/mongodb-labs/django-mongodb-project/archive/refs/heads/6.0.x.zip
           </code></pre>
           <button class="copy-btn" data-copy>📋 Copy command</button>
+          <p class="footnote">The project template wires up <code>DATABASES</code>, <code>DEFAULT_AUTO_FIELD</code>, and migration helpers for you.</p>
           <aside class="notes">
             Same command as the install slide, on its own so it's
             readable from the back of the room — and copyable live.
