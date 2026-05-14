@@ -37,6 +37,8 @@ polls:
     ))
     u = pathlib.Path("demo/demo/urls.py")
     u.write_text(u.read_text()
+        .replace("from django.urls import path",
+                 "from django.urls import include, path")
         .replace("path('admin/', admin.site.urls),",
                  "path('admin/', admin.site.urls),\n    path('polls/', include('polls.urls')),")
     )
