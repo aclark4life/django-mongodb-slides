@@ -26,7 +26,7 @@ startproject:
     sed -i '' "s|'HOST': 'mongodb://localhost:27017/'|'HOST': os.environ.get('MONGODB_URI', 'mongodb://localhost:27017')|" demo/demo/settings.py
 
 # Install polls and wire it into the demo project's settings + urls
-configure-polls:
+polls:
     #!/usr/bin/env python3
     import subprocess, pathlib
     subprocess.run(["pip", "install", "-e", "../mongodb/polls"], check=True)
