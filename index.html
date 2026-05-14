@@ -267,7 +267,7 @@ mongodb-runner exec -t standalone -- sh -c 'python manage.py migrate'
           </aside>
         </section>
 
-        <!-- 6. Inspect with mongosh -->
+        <!-- 8. Inspect with mongosh -->
         <section>
           <h2>Inspect with <code>mongosh</code></h2>
           <p>The official MongoDB shell — a JS REPL for ad-hoc queries.</p>
@@ -308,7 +308,7 @@ mongodb-runner exec -t standalone -- sh -c 'mongosh $MONGODB_URI'
           </aside>
         </section>
 
-        <!-- 7. settings.py -->
+        <!-- 9. settings.py -->
         <section>
           <h2>Configure</h2>
           <pre><code class="language-python" data-trim>
@@ -352,7 +352,7 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 7b. justfile -->
+        <!-- 10. justfile -->
         <section>
           <h2><code>justfile</code></h2>
           <pre><code class="language-makefile" data-trim>
@@ -388,7 +388,7 @@ dropdb:
           </aside>
         </section>
 
-        <!-- 8. Meet the backend -->
+        <!-- 11. Meet the backend -->
         <section class="top-align">
           <h2>Meet Django MongoDB Backend</h2>
           <ul class="tight">
@@ -423,7 +423,7 @@ dropdb:
           </aside>
         </section>
 
-        <!-- 8b. ORM → MQL -->
+        <!-- 12. ORM → MQL -->
         <section>
           <h2>ORM <span class="accent">→</span> MQL</h2>
           <p>As of 6.0, <code>str(qs.query)</code> prints the aggregation pipeline.</p>
@@ -452,7 +452,7 @@ dropdb:
           </aside>
         </section>
 
-        <!-- 9. ObjectId primary keys -->
+        <!-- 13. ObjectId primary keys -->
         <section class="denser">
           <h2>ObjectId primary keys</h2>
           <p><code>DEFAULT_AUTO_FIELD</code> configures the field used for auto-generated PKs.</p>
@@ -503,7 +503,7 @@ dropdb:
           </aside>
         </section>
 
-        <!-- 10. Global vs per-app default_auto_field -->
+        <!-- 14. Global vs per-app default_auto_field -->
         <section class="dense">
           <h2>Global vs per-app</h2>
           <p>Set it once in <code>settings.py</code> — or per app in <code>AppConfig</code>.</p>
@@ -557,7 +557,7 @@ class BlogConfig(AppConfig):
           </aside>
         </section>
 
-        <!-- 11. Migrations & contrib apps from the project template -->
+        <!-- 15. Migrations & contrib apps from the project template -->
         <section class="denser">
           <h2>Migrations &amp; contrib apps</h2>
           <p>What the project template adds to <code>settings.py</code>.</p>
@@ -632,7 +632,7 @@ DATABASE_ROUTERS = [
         </section>
 
 
-        <!-- 12. contrib AppConfigs (apps.py) -->
+        <!-- 16. contrib AppConfigs (apps.py) -->
         <section class="dense">
           <h2>The contrib AppConfigs</h2>
           <p>Where those <code>INSTALLED_APPS</code> entries actually live — your project's <code>apps.py</code>.</p>
@@ -676,7 +676,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
           </aside>
         </section>
 
-        <!-- 12b. What the template does, and why -->
+        <!-- 17. What the template does, and why -->
         <section class="dense">
           <h2>What the project template does</h2>
           <div class="two-col">
@@ -707,7 +707,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
           </aside>
         </section>
 
-        <!-- 13. Why MongoDB -->
+        <!-- 18. Why MongoDB -->
         <section>
           <h2>Why MongoDB?</h2>
           <div class="two-col">
@@ -742,7 +742,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
           </aside>
         </section>
 
-        <!-- 14. Why Django on MongoDB -->
+        <!-- 19. Why Django on MongoDB -->
         <section>
           <h2>Django <em>on</em> MongoDB?</h2>
           <ul class="tight">
@@ -768,7 +768,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
           </aside>
         </section>
 
-        <!-- 15. First model -->
+        <!-- 20. First model -->
         <section>
           <h2>Your first model</h2>
           <pre><code class="language-python" data-trim>
@@ -799,7 +799,7 @@ class Movie(models.Model):
           </aside>
         </section>
 
-        <!-- 16. Embedded models -->
+        <!-- 21. Embedded models -->
         <section>
           <h2>Embedded documents</h2>
           <pre><code class="language-python" data-trim>
@@ -833,7 +833,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 17. Embedded arrays -->
+        <!-- 22. Embedded arrays -->
         <section>
           <h2>Arrays of embedded docs</h2>
           <pre><code class="language-python" data-trim>
@@ -871,7 +871,7 @@ class Order(models.Model):
           </aside>
         </section>
 
-        <!-- 18. Querying -->
+        <!-- 23. Querying -->
         <section>
           <h2>Querying</h2>
           <pre><code class="language-python" data-trim>
@@ -901,7 +901,7 @@ print(Movie.objects.filter(year=2024).query)
           </aside>
         </section>
 
-        <!-- 19. Aggregation -->
+        <!-- 24. Aggregation -->
         <section>
           <h2>When you need MQL: <code>raw_aggregate</code></h2>
           <pre><code class="language-python" data-trim>
@@ -931,7 +931,7 @@ for row in qs:                               # row is a Movie instance
           </aside>
         </section>
 
-        <!-- 20. Indexes -->
+        <!-- 25. Indexes -->
         <section>
           <h2>Indexes — including embedded fields</h2>
           <pre><code class="language-python" data-trim>
@@ -962,7 +962,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 21. Unique constraints -->
+        <!-- 26. Unique constraints -->
         <section class="dense">
           <h2>Unique constraints</h2>
           <pre><code class="language-python" data-trim>
@@ -1000,7 +1000,7 @@ class Customer(models.Model):
           </aside>
         </section>
 
-        <!-- 22. Polymorphic embedded -->
+        <!-- 27. Polymorphic embedded -->
         <section class="dense">
           <h2>Polymorphic embedded models <span class="pill">6.0.3</span></h2>
           <pre><code class="language-python" data-trim>
@@ -1039,7 +1039,7 @@ class Invoice(models.Model):
           </aside>
         </section>
 
-        <!-- 23. Queryable Encryption -->
+        <!-- 28. Queryable Encryption -->
         <section>
           <h2>Queryable Encryption <span class="pill">6.0.1</span></h2>
           <ul class="tight">
@@ -1072,7 +1072,7 @@ class Patient(models.Model):
           </aside>
         </section>
 
-        <!-- 24. Spatial -->
+        <!-- 29. Spatial -->
         <section>
           <h2>Spatial lookups <span class="pill">6.0.1</span></h2>
           <pre><code class="language-python" data-trim>
@@ -1099,7 +1099,7 @@ Cafe.objects.filter(
           </aside>
         </section>
 
-        <!-- 25. Admin -->
+        <!-- 30. Admin -->
         <section>
           <h2>The Django admin… still works</h2>
           <ul class="tight">
@@ -1128,7 +1128,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 26. Limitations -->
+        <!-- 31. Limitations -->
         <section>
           <h2>Limitations</h2>
           <ul class="tight">
@@ -1157,7 +1157,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 26b. Demo: polls app — overview -->
+        <!-- 32. Demo: polls app — overview -->
         <section>
           <h2>Demo: <code>polls</code> app</h2>
           <p>The Django tutorial's polls app, ported to <code>django-mongodb-backend</code>.</p>
@@ -1177,7 +1177,7 @@ urlpatterns = [
           </aside>
         </section>
 
-        <!-- 26c. Demo: models.py -->
+        <!-- 33. Demo: polls/models.py -->
         <section class="denser">
           <h2><code>polls/models.py</code></h2>
           <pre><code class="language-python" data-trim>
@@ -1222,7 +1222,7 @@ class Question(models.Model):
           </aside>
         </section>
 
-        <!-- 26d. Demo: voting on an embedded Choice -->
+        <!-- 34. Demo: voting on an embedded Choice -->
         <section class="dense">
           <h2>Voting on an embedded <code>Choice</code></h2>
           <pre><code class="language-python" data-trim>
@@ -1249,7 +1249,7 @@ def vote(request, pk):
           </aside>
         </section>
 
-        <!-- 26e. Demo: AnalyticsView with raw_aggregate -->
+        <!-- 35. Demo: AnalyticsView with raw_aggregate -->
         <section class="dense">
           <h2><code>raw_aggregate</code> in a view</h2>
           <pre><code class="language-python" data-trim>
@@ -1285,7 +1285,7 @@ class AnalyticsView(TemplateView):
           </aside>
         </section>
 
-        <!-- 26f. Demo: Atlas Search with fallback -->
+        <!-- 36. Demo: Atlas Search with fallback -->
         <section class="dense">
           <h2>Atlas Search with a fallback</h2>
           <pre><code class="language-python" data-trim>
@@ -1319,7 +1319,7 @@ class SearchView(TemplateView):
           </aside>
         </section>
 
-        <!-- 26g. Demo: run it -->
+        <!-- 37. Demo: run polls -->
         <section>
           <h2>Run the polls demo</h2>
           <pre><code class="language-bash" data-trim>
@@ -1345,7 +1345,7 @@ python manage.py runserver  # then visit /polls/
           </aside>
         </section>
 
-        <!-- 26h. Demo: medical-records app — overview -->
+        <!-- 38. Demo: medical-records app — overview -->
         <section>
           <h2>Demo: <code>medical-records</code> app</h2>
           <p>A patient records app showcasing MongoDB Queryable Encryption.</p>
@@ -1366,7 +1366,7 @@ python manage.py runserver  # then visit /polls/
           </aside>
         </section>
 
-        <!-- 26i. Demo: medical_records/models.py -->
+        <!-- 39. Demo: medical_records/models.py -->
         <section class="denser">
           <h2><code>medical_records/models.py</code></h2>
           <pre><code class="language-python" data-trim>
@@ -1404,7 +1404,7 @@ class Billing(EmbeddedModel):
           </aside>
         </section>
 
-        <!-- 26j. Demo: seeding encrypted patients -->
+        <!-- 40. Demo: seeding encrypted patients -->
         <section class="dense">
           <h2>Seeding encrypted patients</h2>
           <pre><code class="language-python" data-trim>
@@ -1437,7 +1437,7 @@ patient.save()  # ssn + billing encrypted client-side before the write
           </aside>
         </section>
 
-        <!-- 26k. Demo: routers.py — EncryptedRouter -->
+        <!-- 41. Demo: routers.py — EncryptedRouter -->
         <section class="dense">
           <h2><code>EncryptedRouter</code></h2>
           <pre><code class="language-python" data-trim>
@@ -1477,7 +1477,7 @@ class EncryptedRouter:
           </aside>
         </section>
 
-        <!-- 26l. Demo: run it -->
+        <!-- 42. Demo: run medical-records -->
         <section>
           <h2>Run the medical-records demo</h2>
           <pre><code class="language-bash" data-trim>
@@ -1506,7 +1506,7 @@ python manage.py create_patients 5
           </aside>
         </section>
 
-        <!-- 26l-bis. Demo: skip the migration, get unencrypted collections -->
+        <!-- 43. Demo: skip the migration, get unencrypted collections -->
         <section class="dense">
           <h2>Don't skip <code>migrate&nbsp;--database&nbsp;encrypted</code></h2>
           <p>If the encrypted collection doesn't exist yet, the first
@@ -1543,7 +1543,7 @@ python manage.py create_patients 5 --skip-checks
           </aside>
         </section>
 
-        <!-- 26l. Demo: wagtail-mongodb-project — overview -->
+        <!-- 44. Demo: wagtail-mongodb-project — overview -->
         <section class="dense">
           <h2>Demo: <code>wagtail-mongodb-project</code></h2>
           <p>A Wagtail <code>startproject</code> template wired for MongoDB.</p>
@@ -1566,7 +1566,7 @@ python manage.py create_patients 5 --skip-checks
           </aside>
         </section>
 
-        <!-- 26m. Demo: settings — INSTALLED_APPS + MIGRATION_MODULES -->
+        <!-- 45. Demo: settings — INSTALLED_APPS + MIGRATION_MODULES -->
         <section class="denser">
           <h2><code>settings/base.py</code></h2>
           <pre><code class="language-python" data-trim>
@@ -1616,7 +1616,7 @@ MIGRATION_MODULES = {
           </aside>
         </section>
 
-        <!-- 26o. Demo: run it -->
+        <!-- 46. Demo: run wagtail-mongodb-project -->
         <section>
           <h2>Run the wagtail-mongodb-project demo</h2>
           <pre><code class="language-bash" data-trim>
@@ -1640,7 +1640,7 @@ python manage.py runserver            # /admin/ for Wagtail CMS
           </aside>
         </section>
 
-        <!-- 26p. Demo: bakerydemo on top — settings additions -->
+        <!-- 47. Demo: bakerydemo on top — settings additions -->
         <section class="denser">
           <h2>Add <code>bakerydemo</code> on top</h2>
           <p>The upstream <a href="https://github.com/wagtail/bakerydemo" target="_blank" rel="noopener">wagtail/bakerydemo</a> drops in unmodified.</p>
@@ -1679,7 +1679,7 @@ MIGRATION_MODULES.update({
           </aside>
         </section>
 
-        <!-- 26q. Demo: run bakerydemo -->
+        <!-- 48. Demo: run bakerydemo -->
         <section>
           <h2>Run bakerydemo on MongoDB</h2>
           <pre><code class="language-bash" data-trim>
@@ -1708,7 +1708,7 @@ python manage.py runserver
           </aside>
         </section>
 
-        <!-- 27. Resources -->
+        <!-- 49. Resources -->
         <section class="dense">
           <h2>Resources</h2>
           <ul class="tight">
@@ -1732,7 +1732,7 @@ python manage.py runserver
           </aside>
         </section>
 
-        <!-- 28. Thanks -->
+        <!-- 50. Thanks -->
         <section class="title">
           <img class="brand-lockup" src="assets/mongodb/MongoDB_White.svg" alt="MongoDB" style="height: 1.4em;" />
           <h1>Thanks 👋</h1>
