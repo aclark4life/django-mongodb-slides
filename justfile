@@ -51,6 +51,10 @@ runserver:
 migrate:
     cd demo && MONGODB_URI="$(just _uri)" python manage.py migrate
 
+# Create Django superuser (admin / admin)
+su:
+    cd demo && MONGODB_URI="$(just _uri)" DJANGO_SUPERUSER_PASSWORD=admin python manage.py createsuperuser --noinput --username=admin --email=admin@example.com
+
 # Drop the demo database (handy between demos)
 dropdb:
     mongosh "$(just _uri)" --quiet --eval 'db.getSiblingDB("demo").dropDatabase()'
