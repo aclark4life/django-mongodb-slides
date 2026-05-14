@@ -32,8 +32,8 @@ polls:
     subprocess.run(["pip", "install", "-e", "../mongodb/polls"], check=True)
     s = pathlib.Path("demo/demo/settings.py")
     s.write_text(s.read_text().replace(
-        "'django_mongodb_backend',",
-        "'django_mongodb_backend',\n    'polls',"
+        "    'django_mongodb_backend',\n]",
+        "    'django_mongodb_backend',\n    'polls',\n]"
     ))
     u = pathlib.Path("demo/demo/urls.py")
     u.write_text(u.read_text()
