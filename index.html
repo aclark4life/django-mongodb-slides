@@ -1800,7 +1800,11 @@ python manage.py runserver
         btn.addEventListener('click', () => {
           const code = btn.previousElementSibling?.querySelector('code');
           if (!code) return;
-          const text = code.textContent.trim().replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+          const text = code.textContent
+            .trim()
+            .replace(/\r\n/g, '\n')
+            .replace(/\r/g, '\n')
+            .replace(/[^\t\n\x20-\x7E]/g, '');
           navigator.clipboard.writeText(text).then(() => {
             const orig = btn.textContent;
             btn.textContent = '✓ Copied';
