@@ -808,7 +808,7 @@ class Customer(models.Model):
     name = models.CharField(max_length=120)
     address = EmbeddedModelField(Address)
           </code></pre>
-          <p>One document. No join. <code>customer.address.city</code> just works.</p>
+          <p class="footnote">One document. No join. <code>customer.address.city</code> just works.</p>
           <aside class="notes">
             Now we leave SQL-land. EmbeddedModel is a model class that
             doesn't have its own collection — it can only exist embedded
