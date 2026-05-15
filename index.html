@@ -560,7 +560,7 @@ class BlogConfig(AppConfig):
               </ul>
             </div>
           </div>
-          <p class="footnote">model <code>pk</code> &gt; app <code>default_auto_field</code> &gt; <code>DEFAULT_AUTO_FIELD</code></p>
+          <p class="footnote">Model <code>pk</code> &gt; App <code>default_auto_field</code> &gt; <code>DEFAULT_AUTO_FIELD</code></p>
           <aside class="notes">
             Two places to configure this. The global DEFAULT_AUTO_FIELD
             in settings.py is the project-wide default — every app
@@ -619,7 +619,7 @@ DATABASE_ROUTERS = [
 ]
               </code></pre>
               <ul class="tight">
-                <li>Re-points contrib migrations at ObjectId-friendly copies</li>
+                <li>Reconfigures contrib migrations to use ObjectId-friendly copies</li>
                 <li><code>MongoRouter</code> keeps embedded models off <code>migrate</code></li>
               </ul>
             </div>
