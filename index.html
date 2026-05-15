@@ -214,7 +214,91 @@ django-admin startproject -v 3 demo \
           </aside>
         </section>
 
-        <!-- 7. Start Project -->
+        <!-- 7. Start MongoDB -->
+        <section>
+          <h2>Start MongoDB</h2>
+          <p>Use <code>mongodb-runner</code></p>
+          <pre><code class="language-bash" data-trim>
+# Install once
+npm install -g mongodb-runner
+
+# Standalone server on the default port
+mongodb-runner start
+
+# Or a replica set (required for transactions)
+mongodb-runner start -t replset
+
+# List what's running, then stop everything
+mongodb-runner ls
+mongodb-runner stop --all
+
+# Run a command with MONGODB_URI pre-set
+mongodb-runner exec -t standalone -- sh -c 'python manage.py migrate'
+          </code></pre>
+          <p class="footnote">Requires Node.js ≥ 20.19. Downloads the MongoDB binary on first run, caches it after. Source: <a href="https://github.com/mongodb-js/devtools-shared/tree/main/packages/mongodb-runner" target="_blank" rel="noopener">mongodb-js/devtools-shared</a>.</p>
+          <aside class="notes">
+            Quick aside before we configure Django. If you don't already
+            have a MongoDB instance handy — no Atlas cluster, no local
+            mongod — mongodb-runner is the fastest way to get one. It's
+            an npm package maintained by the MongoDB tooling team that
+            downloads a server binary, runs it, and hands you a
+            connection string.
+
+            mongodb-runner start gives you a standalone on the default
+            port. -t replset gives you a replica set, which you need
+            for multi-document transactions. ls and stop --all do what
+            you'd expect. And exec is the trick I use most: it starts a
+            server, sets MONGODB_URI in the environment, runs your
+            command, then tears the server down on exit. Perfect for CI
+            and for running migrate against a clean database.
+
+            Requires Node 20 or newer. First run downloads the server
+            binary; subsequent runs reuse the cache.
+          </aside>
+        </section>
+
+        <!-- 8. Start MongoDB -->
+        <section>
+          <h2>Start MongoDB</h2>
+          <p>Inspect with <code>mongosh</code> — the official MongoDB shell, a JS REPL for ad-hoc queries.</p>
+          <pre><code class="language-bash" data-trim>
+# Install once  (or `brew install mongosh`)
+npm install -g mongosh
+
+# Connect — accepts the same URI as the Django backend
+mongosh "$MONGODB_URI"
+
+# One-shot commands with --eval
+mongosh "$MONGODB_URI" --quiet --eval 'db.movie.find({ year: 2024 })'
+mongosh "$MONGODB_URI" --quiet --eval 'db.getSiblingDB("demo").dropDatabase()'
+
+# Or pipe through mongodb-runner so MONGODB_URI is set for you
+mongodb-runner exec -t standalone -- sh -c 'mongosh $MONGODB_URI'
+          </code></pre>
+          <p class="footnote">Replaces the legacy <code>mongo</code> shell. Also available via Homebrew and the MongoDB downloads page.</p>
+          <aside class="notes">
+            One more tool while we're in shell-land. mongosh is the
+            official MongoDB shell — a JavaScript REPL that replaces the
+            legacy mongo binary. It accepts the same connection URI we
+            just wired into Django, so it's the fastest way to peek at
+            what the ORM actually wrote.
+
+            Three usage patterns. Interactive: just point it at
+            MONGODB_URI and you get a prompt. One-shot: --quiet --eval
+            for scripted queries — that's how I dropped a database in a
+            single line, and how a lot of CI cleanup steps look. And the
+            pipe-through-runner trick from the previous slide also works
+            here: mongodb-runner exec sets MONGODB_URI and hands it to
+            the child process, so you can spin up a server and a shell
+            in one command.
+
+            Install via npm — same Node toolchain as mongodb-runner,
+            so if you already have one you have the other. Homebrew and
+            the MongoDB downloads page also work.
+          </aside>
+        </section>
+
+        <!-- 9. Start Project -->
         <section>
           <h2>Start Project</h2>
           <p>Configure <code>MONGODB_URI</code></p>
@@ -259,7 +343,7 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 8. Start Project -->
+        <!-- 10. Start Project -->
         <section>
           <h2>Start Project</h2>
           <p><code>justfile</code></p>
@@ -293,90 +377,6 @@ dropdb:
             instance tagged --id demo or starts a fresh one. It's in the
             actual justfile in the repo; I left it off this slide to
             keep things readable.
-          </aside>
-        </section>
-
-        <!-- 9. Start MongoDB -->
-        <section>
-          <h2>Start MongoDB</h2>
-          <p>Use <code>mongodb-runner</code></p>
-          <pre><code class="language-bash" data-trim>
-# Install once
-npm install -g mongodb-runner
-
-# Standalone server on the default port
-mongodb-runner start
-
-# Or a replica set (required for transactions)
-mongodb-runner start -t replset
-
-# List what's running, then stop everything
-mongodb-runner ls
-mongodb-runner stop --all
-
-# Run a command with MONGODB_URI pre-set
-mongodb-runner exec -t standalone -- sh -c 'python manage.py migrate'
-          </code></pre>
-          <p class="footnote">Requires Node.js ≥ 20.19. Downloads the MongoDB binary on first run, caches it after. Source: <a href="https://github.com/mongodb-js/devtools-shared/tree/main/packages/mongodb-runner" target="_blank" rel="noopener">mongodb-js/devtools-shared</a>.</p>
-          <aside class="notes">
-            Quick aside before we configure Django. If you don't already
-            have a MongoDB instance handy — no Atlas cluster, no local
-            mongod — mongodb-runner is the fastest way to get one. It's
-            an npm package maintained by the MongoDB tooling team that
-            downloads a server binary, runs it, and hands you a
-            connection string.
-
-            mongodb-runner start gives you a standalone on the default
-            port. -t replset gives you a replica set, which you need
-            for multi-document transactions. ls and stop --all do what
-            you'd expect. And exec is the trick I use most: it starts a
-            server, sets MONGODB_URI in the environment, runs your
-            command, then tears the server down on exit. Perfect for CI
-            and for running migrate against a clean database.
-
-            Requires Node 20 or newer. First run downloads the server
-            binary; subsequent runs reuse the cache.
-          </aside>
-        </section>
-
-        <!-- 10. Start MongoDB -->
-        <section>
-          <h2>Start MongoDB</h2>
-          <p>Inspect with <code>mongosh</code> — the official MongoDB shell, a JS REPL for ad-hoc queries.</p>
-          <pre><code class="language-bash" data-trim>
-# Install once  (or `brew install mongosh`)
-npm install -g mongosh
-
-# Connect — accepts the same URI as the Django backend
-mongosh "$MONGODB_URI"
-
-# One-shot commands with --eval
-mongosh "$MONGODB_URI" --quiet --eval 'db.movie.find({ year: 2024 })'
-mongosh "$MONGODB_URI" --quiet --eval 'db.getSiblingDB("demo").dropDatabase()'
-
-# Or pipe through mongodb-runner so MONGODB_URI is set for you
-mongodb-runner exec -t standalone -- sh -c 'mongosh $MONGODB_URI'
-          </code></pre>
-          <p class="footnote">Replaces the legacy <code>mongo</code> shell. Also available via Homebrew and the MongoDB downloads page.</p>
-          <aside class="notes">
-            One more tool while we're in shell-land. mongosh is the
-            official MongoDB shell — a JavaScript REPL that replaces the
-            legacy mongo binary. It accepts the same connection URI we
-            just wired into Django, so it's the fastest way to peek at
-            what the ORM actually wrote.
-
-            Three usage patterns. Interactive: just point it at
-            MONGODB_URI and you get a prompt. One-shot: --quiet --eval
-            for scripted queries — that's how I dropped a database in a
-            single line, and how a lot of CI cleanup steps look. And the
-            pipe-through-runner trick from the previous slide also works
-            here: mongodb-runner exec sets MONGODB_URI and hands it to
-            the child process, so you can spin up a server and a shell
-            in one command.
-
-            Install via npm — same Node toolchain as mongodb-runner,
-            so if you already have one you have the other. Homebrew and
-            the MongoDB downloads page also work.
           </aside>
         </section>
 
