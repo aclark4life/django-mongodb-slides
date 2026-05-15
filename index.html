@@ -685,9 +685,9 @@ class MongoContentTypesConfig(ContentTypesConfig):
             at ObjectIdAutoField.
 
             Why subclass instead of editing the contrib apps directly?
-            Because django.contrib.auth.apps.AuthConfig pins
+            Because the standard Admin, Auth, and ContentTypes configs pin
             BigAutoField for backwards compatibility, and you can't
-            monkey-patch that without breaking other Django projects in
+            monkey-patch them without breaking other Django projects in
             the same interpreter. The override-via-subclass pattern is
             Django's documented escape hatch — same mechanism a normal
             app uses to set its own default_auto_field.
@@ -701,33 +701,45 @@ class MongoContentTypesConfig(ContentTypesConfig):
         </section>
 
         <!-- 17. What the template does, and why -->
-        <section class="dense">
+        <section class="denser">
           <h2>What the project template does</h2>
           <div class="two-col">
             <div>
-              <h3>What</h3>
+              <h3>Action</h3>
               <ul class="tight">
-                <li>Subclasses contrib AppConfigs → <code>ObjectIdAutoField</code></li>
-                <li>Redirects <code>MIGRATION_MODULES</code> to <code>mongo_migrations.*</code></li>
-                <li>Adds <code>MongoRouter</code> to <code>DATABASE_ROUTERS</code></li>
+                <li>Subclass <code>AuthConfig</code>, <code>AdminConfig</code>, <code>ContentTypesConfig</code></li>
+                <li>Reconfigure <code>MIGRATION_MODULES</code> to use <code>mongo_migrations.*</code></li>
+                <li>Add <code>MongoRouter</code> to <code>DATABASE_ROUTERS</code></li>
               </ul>
             </div>
             <div>
-              <h3>Why</h3>
+              <h3>Reason</h3>
               <ul class="tight">
-                <li>Stock migrations bake in <code>BigAutoField</code></li>
-                <li><code>AuthConfig</code> pins it; subclassing is the escape hatch</li>
-                <li>Embedded models aren't real collections</li>
+                <li>Contrib AppConfigs default to <code>BigAutoField</code>; subclassing overrides to <code>ObjectIdAutoField</code></li>
+                <li>Bundled migrations assume integer primary keys; reconfigured migrations use <code>ObjectIdAutoField</code></li>
+                <li>Embedded models have no backing collection and must be excluded from routing</li>
               </ul>
             </div>
           </div>
-          <p class="footnote">Use the template and you get all of this for free.</p>
+          <p class="footnote">The project template applies all three changes automatically.</p>
           <aside class="notes">
-            One-slide summary before we leave the setup section. The
-            template exists because Django assumes BigAutoField
-            everywhere, and MongoDB wants ObjectId. Three small patches
-            — AppConfig subclasses, MIGRATION_MODULES redirect, and
-            MongoRouter — bridge that assumption without forking Django.
+            A summary of the three structural changes the project template
+            makes to a standard Django project.
+
+            First, the contrib AppConfigs — AuthConfig, AdminConfig, and
+            ContentTypesConfig — all default to BigAutoField. The template
+            subclasses each one and sets default_auto_field to
+            ObjectIdAutoField, so every model in auth, admin, and
+            contenttypes receives an ObjectId primary key.
+
+            Second, the migration files bundled with django.contrib assume
+            integer primary keys. MIGRATION_MODULES is reconfigured to point
+            those apps to mongo_migrations.*, a set of regenerated migrations
+            that use ObjectIdAutoField throughout.
+
+            Third, MongoRouter is added to DATABASE_ROUTERS to prevent
+            embedded models — which have no backing collection — from
+            being included in migrate operations.
           </aside>
         </section>
 
