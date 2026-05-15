@@ -1794,13 +1794,20 @@ python manage.py runserver
         transition: 'slide',
         plugins: [Highlight, Notes],
       });
-      deck.initialize();
+
+      // After highlight.js has run, store each block's rendered text so the
+      // copy handler always gets clean, newline-correct content.
+      deck.initialize().then(() => {
+        document.querySelectorAll('pre > code').forEach(el => {
+          el.dataset.plain = el.innerText.trim();
+        });
+      });
 
       document.querySelectorAll('.copy-btn[data-copy]').forEach((btn) => {
         btn.addEventListener('click', () => {
           const code = btn.previousElementSibling?.querySelector('code');
           if (!code) return;
-          const text = (code.innerText || code.textContent).trim();
+          const text = code.dataset.plain || (code.innerText || code.textContent).trim();
           navigator.clipboard.writeText(text).then(() => {
             const orig = btn.textContent;
             btn.textContent = '✓ Copied';
