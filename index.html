@@ -845,7 +845,7 @@ class Order(models.Model):
     items = EmbeddedModelArrayField(LineItem)
     tags = ArrayField(models.CharField(max_length=30), default=list)
           </code></pre>
-          <p>One round-trip. The whole order — line items, tags — hydrated together.</p>
+          <p>Loading an <code>Order</code> fetches its embedded <code>LineItem</code> array and scalar <code>tags</code> in a single document read — no joins, no extra queries.</p>
           <aside class="notes">
             Same idea, repeated. Order has many LineItems — instead of an
             order_items table with a foreign key back to orders, you get an
