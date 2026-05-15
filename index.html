@@ -1788,11 +1788,6 @@ python manage.py runserver
       import Highlight from 'https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/highlight.mjs';
       import Notes from 'https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/notes.mjs';
 
-      // Capture raw code text before highlight.js rewrites the DOM.
-      document.querySelectorAll('pre > code').forEach(el => {
-        el.dataset.plain = el.textContent.trim().replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-      });
-
       const deck = new Reveal({
         hash: true,
         slideNumber: 'c/t',
@@ -1805,7 +1800,7 @@ python manage.py runserver
         btn.addEventListener('click', () => {
           const code = btn.previousElementSibling?.querySelector('code');
           if (!code) return;
-          const text = code.dataset.plain || code.textContent.trim();
+          const text = (code.innerText || code.textContent).trim();
           navigator.clipboard.writeText(text).then(() => {
             const orig = btn.textContent;
             btn.textContent = '✓ Copied';
