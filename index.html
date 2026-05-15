@@ -456,10 +456,10 @@ str(qs.query)
 # [{'$match': {'app_label': {'$eq': 'auth'}}}]
 
 # ContentType for a specific model class
-ContentType.objects.get_for_model(User)
+ct = ContentType.objects.get_for_model(User)
 
 # Auth permissions joined to their content type — one query
-Permission.objects.select_related("content_type").filter(
+perms = Permission.objects.select_related("content_type").filter(
     content_type__app_label="auth"
 )
           </code></pre>

@@ -60,9 +60,13 @@ migrate:
 su:
     cd demo && MONGODB_URI="$(just _uri)" DJANGO_SUPERUSER_PASSWORD=admin python manage.py createsuperuser --noinput --username=admin --email=admin@example.com
 
-# Open a Django shell against the demo database
+# Open a Django shell against the demo database (IPython, vi key bindings)
 shell:
-    cd demo && MONGODB_URI="$(just _uri)" python manage.py shell -i ipython
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p demo/.ipython/profile_default
+    echo "c.TerminalInteractiveShell.editing_mode = 'vi'" > demo/.ipython/profile_default/ipython_config.py
+    cd demo && IPYTHONDIR="$PWD/.ipython" MONGODB_URI="$(just _uri)" python manage.py shell -i ipython
 
 # Open a MongoDB shell against the demo database
 dbshell:
