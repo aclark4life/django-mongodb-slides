@@ -1128,7 +1128,7 @@ Cafe.objects.filter(
     location__dwithin=(Point(13.405, 52.52), D(km=2)),
 )
           </code></pre>
-          <p>GeoDjango-style queries, MongoDB-native execution.</p>
+          <p class="footnote">GeoDjango-style queries, MongoDB-native execution.</p>
           <aside class="notes">
             GeoDjango-style queries, executed natively on a MongoDB
             2dsphere index. Cafe.objects.filter with location__dwithin,
@@ -1145,7 +1145,7 @@ Cafe.objects.filter(
 
         <!-- 30. Admin -->
         <section>
-          <h2>🤖 The Django admin… still works</h2>
+          <h2>🤖 The Django admin… still works!</h2>
           <ul class="tight">
             <li>Register models exactly as you always have</li>
             <li>Embedded fields render as nested forms</li>
