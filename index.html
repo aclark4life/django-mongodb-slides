@@ -32,6 +32,12 @@
       .reveal section.denser .two-col h3, .reveal section.denser .three-col h3 { font-size: 0.8em; }
       .reveal section.denser > p { font-size: 0.8em; }
       .reveal section.denser .footnote { font-size: 0.4em; }
+      .reveal section.densest pre { font-size: 0.35em; }
+      .reveal section.densest pre code { padding: 0.5em; }
+      .reveal section.densest .tight li { margin: 0.03em 0; font-size: 0.7em; }
+      .reveal section.densest .two-col h3, .reveal section.densest .three-col h3 { font-size: 0.75em; }
+      .reveal section.densest > p { font-size: 0.75em; }
+      .reveal section.densest .footnote { font-size: 0.35em; }
       .reveal :not(pre) > code {
         font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
         font-size: 0.85em;
@@ -583,7 +589,7 @@ class BlogConfig(AppConfig):
         </section>
 
         <!-- 15. Migrations & contrib apps from the project template -->
-        <section class="denser">
+        <section class="densest">
           <h2>Migrations &amp; contrib apps</h2>
           <p>What the project template adds to <code>settings.py</code>.</p>
           <div class="two-col">
@@ -746,7 +752,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
 
         <!-- 18. Why MongoDB -->
         <section>
-          <h2>Why MongoDB?</h2>
+          <h2>🤖 Why MongoDB?</h2>
           <div class="two-col">
             <div>
               <h3>Document model</h3>
@@ -781,7 +787,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
 
         <!-- 19. Why Django on MongoDB -->
         <section>
-          <h2>Django on MongoDB?</h2>
+          <h2>🤖 Django on MongoDB?</h2>
           <ul class="tight">
             <li>Keep what you love: ORM, admin, migrations, forms, auth</li>
             <li>Gain document-native modeling: <code>EmbeddedModelField</code>, <code>ArrayField</code>, <code>ObjectIdField</code></li>
