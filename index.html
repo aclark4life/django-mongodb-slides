@@ -298,10 +298,9 @@ mongodb-runner exec -t standalone -- sh -c 'mongosh $MONGODB_URI'
           </aside>
         </section>
 
-        <!-- 9. Start Project -->
+        <!-- 9. Configure MONGODB_URI -->
         <section>
-          <h2>Start Project</h2>
-          <p>Configure <code>MONGODB_URI</code></p>
+          <h2>Configure <code>MONGODB_URI</code></h2>
           <pre style="font-size: 0.4em;"><code class="language-python" data-trim>
 # settings.py
 import os
@@ -343,10 +342,9 @@ INSTALLED_APPS = [
           </aside>
         </section>
 
-        <!-- 10. Start Project -->
+        <!-- 10. justfile -->
         <section>
-          <h2>Start Project</h2>
-          <p><code>justfile</code></p>
+          <h2><code>justfile</code></h2>
           <pre style="font-size: 0.4em;"><code class="language-makefile" data-trim>
 default:
     @just --list
