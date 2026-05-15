@@ -820,6 +820,7 @@ class Movie(models.Model):
     class Meta:
         indexes = [models.Index(fields=["year", "title"])]
           </code></pre>
+          <button class="copy-btn" data-copy>📋 Copy</button>
           <p class="footnote">A standard Django model — no new API to learn. The backend stores each instance as a MongoDB document, and <code>id</code> is automatically a BSON <code>ObjectId</code> rather than an integer.</p>
           <aside class="notes">
             This is just a Django model. Nothing exotic. CharField,
