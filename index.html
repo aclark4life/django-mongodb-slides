@@ -1222,7 +1222,7 @@ urlpatterns = [
         </section>
 
         <!-- 33. Demo: polls/models.py -->
-        <section class="denser">
+        <section class="densest">
           <h2><code>polls/models.py</code></h2>
           <pre><code class="language-python" data-trim>
 from django.db import models
@@ -1282,7 +1282,7 @@ def vote(request, pk):
     question.save()
     return HttpResponseRedirect(reverse("polls:results", args=(question.pk,)))
           </code></pre>
-          <p>Mutate the embedded <code>Choice</code> in place, reassign it, save the parent.</p>
+          <p class="footnote">Mutate the embedded <code>Choice</code> in place, reassign it, save the parent.</p>
           <aside class="notes">
             No second collection, no foreign key, no separate save. Pull
             the Choice out of the array by index, bump its votes,
@@ -1294,7 +1294,7 @@ def vote(request, pk):
         </section>
 
         <!-- 35. Demo: AnalyticsView with raw_aggregate -->
-        <section class="dense">
+        <section class="denser">
           <h2><code>raw_aggregate</code> in a view</h2>
           <pre><code class="language-python" data-trim>
 class AnalyticsView(TemplateView):
@@ -1353,7 +1353,7 @@ class SearchView(TemplateView):
             ctx["mode"] = "fallback"
         return ctx
           </code></pre>
-          <p class="footnote">Atlas: <code>$search</code>. Local replica set: <code>__icontains</code> + a banner.</p>
+          <p class="footnote" style="font-size: 0.35em;">Atlas: <code>$search</code>. Local replica set: <code>__icontains</code> + a banner.</p>
           <aside class="notes">
             On Atlas, SearchText hits the polls_question_search index we
             declared in models.py. On a local replica set $search isn't
