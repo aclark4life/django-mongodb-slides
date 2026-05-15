@@ -465,6 +465,7 @@ Permission.objects.filter(content_type__app_label="polls")
 # Permissions with their content type in one query
 Permission.objects.select_related("content_type").all()
           </code></pre>
+          <button class="copy-btn" data-copy>📋 Copy</button>
           <aside class="notes">
             ContentType and Permission are standard Django ORM models —
             they work exactly the same against MongoDB as they do against
