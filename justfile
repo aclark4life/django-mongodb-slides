@@ -63,9 +63,9 @@ su:
 shell:
     cd demo && MONGODB_URI="$(just _uri)" python manage.py shell
 
-# Open a MongoDB shell via Django's dbshell command
+# Open a MongoDB shell against the demo database
 dbshell:
-    cd demo && MONGODB_URI="$(just _uri)" python manage.py dbshell
+    mongosh "$(just _uri)demo"
 
 # Drop the demo database (handy between demos)
 dropdb:
