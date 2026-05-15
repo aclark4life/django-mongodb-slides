@@ -442,7 +442,40 @@ dropdb:
           </aside>
         </section>
 
-        <!-- 13. ObjectId primary keys -->
+        <!-- 13. ORM → MQL (content types & permissions) -->
+        <section>
+          <h2>ORM <span class="accent">→</span> MQL</h2>
+          <p>Content types &amp; permissions via the Django ORM.</p>
+          <pre><code class="language-python" data-trim>
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Permission
+
+# List all registered content types
+ContentType.objects.all()
+
+# Get the content type for a specific model
+ContentType.objects.get_for_model(MyModel)
+
+# List all permissions
+Permission.objects.all()
+
+# Filter permissions by app
+Permission.objects.filter(content_type__app_label="polls")
+
+# Permissions with their content type in one query
+Permission.objects.select_related("content_type").all()
+          </code></pre>
+          <aside class="notes">
+            ContentType and Permission are standard Django ORM models —
+            they work exactly the same against MongoDB as they do against
+            Postgres. get_for_model() is the idiomatic way to look up the
+            content type for a specific model class. select_related lets
+            you pull the content type alongside each permission without a
+            second round-trip.
+          </aside>
+        </section>
+
+        <!-- 14. ObjectId primary keys -->
         <section class="denser">
           <h2>ObjectId primary keys</h2>
           <p><code>DEFAULT_AUTO_FIELD</code> configures the field used for auto-generated PKs.</p>
