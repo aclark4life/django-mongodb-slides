@@ -24,6 +24,7 @@ startproject:
     django-admin startproject demo -v 3 --template https://github.com/mongodb-labs/django-mongodb-project/archive/refs/heads/6.0.x.zip
     python3 -c "p='demo/demo/settings.py'; s=open(p).read(); open(p,'w').write('import os\n'+s)"
     sed -i '' "s|'HOST': 'mongodb://localhost:27017/'|'HOST': os.environ.get('MONGODB_URI', 'mongodb://localhost:27017')|" demo/demo/settings.py
+    pip install ipython
 
 # Install polls, wire it into the demo project's settings + urls, and seed data
 polls:
@@ -61,7 +62,7 @@ su:
 
 # Open a Django shell against the demo database
 shell:
-    cd demo && MONGODB_URI="$(just _uri)" python manage.py shell
+    cd demo && MONGODB_URI="$(just _uri)" python manage.py shell -i ipython
 
 # Open a MongoDB shell against the demo database
 dbshell:
