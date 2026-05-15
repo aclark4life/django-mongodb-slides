@@ -1471,7 +1471,7 @@ patient = Patient(
 )
 patient.save()  # ssn + billing encrypted client-side before the write
           </code></pre>
-          <p class="footnote">App code is unchanged — encryption happens transparently in the driver.</p>
+          <p class="footnote" style="font-size: 0.35em;">App code is unchanged — encryption happens transparently in the driver.</p>
           <aside class="notes">
             The whole point: you build the Python objects exactly the way
             you would without QE. libmongocrypt encrypts the marked fields
@@ -1597,7 +1597,7 @@ python manage.py create_patients 5 --skip-checks
             <li>Ships <code>EncryptedRouter</code> (above) and a <code>PostgreSQLRouter</code> for hybrid Mongo + Postgres</li>
             <li><code>manage.py init</code> bootstraps Wagtail root page + default site</li>
           </ul>
-          <p class="footnote">Source: <a href="https://github.com/aclark4life/wagtail-mongodb-project" target="_blank" rel="noopener">github.com/aclark4life/wagtail-mongodb-project</a></p>
+          <p class="footnote" style="font-size: 0.35em;">Source: <a href="https://github.com/aclark4life/wagtail-mongodb-project" target="_blank" rel="noopener">github.com/aclark4life/wagtail-mongodb-project</a></p>
           <aside class="notes">
             Same idea as the django-mongodb-project template earlier in
             the deck, but for Wagtail. It subclasses every Wagtail
@@ -1611,7 +1611,7 @@ python manage.py create_patients 5 --skip-checks
         </section>
 
         <!-- 45. Demo: settings — INSTALLED_APPS + MIGRATION_MODULES -->
-        <section class="denser">
+        <section class="densest">
           <h2><code>settings/base.py</code></h2>
           <pre><code class="language-python" data-trim>
 INSTALLED_APPS = [
@@ -1662,7 +1662,7 @@ MIGRATION_MODULES = {
 
         <!-- 46. Demo: run wagtail-mongodb-project -->
         <section>
-          <h2>Run the wagtail-mongodb-project demo</h2>
+          <h2>Use the wagtail-mongodb-project template</h2>
           <pre><code class="language-bash" data-trim>
 # Bootstrap a fresh Wagtail+MongoDB project from the template
 django-admin startproject demo \
@@ -1686,7 +1686,7 @@ python manage.py runserver            # /admin/ for Wagtail CMS
 
         <!-- 47. Demo: bakerydemo on top — settings additions -->
         <section class="denser">
-          <h2>Add <code>bakerydemo</code> on top</h2>
+          <h2>Add <code>bakerydemo</code></h2>
           <p>The upstream <a href="https://github.com/wagtail/bakerydemo" target="_blank" rel="noopener">wagtail/bakerydemo</a> drops in unmodified.</p>
           <pre><code class="language-python" data-trim>
 # demo/settings/base.py — extend, don't fork
@@ -1753,15 +1753,15 @@ python manage.py runserver
         </section>
 
         <!-- 49. Resources -->
-        <section class="dense">
+        <section class="denser">
           <h2>Resources</h2>
           <ul class="tight">
             <li>Docs — <a href="https://django-mongodb-backend.readthedocs.io/" target="_blank" rel="noopener">django-mongodb-backend.readthedocs.io</a></li>
             <li>Source — <a href="https://github.com/mongodb/django-mongodb-backend" target="_blank" rel="noopener">github.com/mongodb/django-mongodb-backend</a></li>
             <li>Project template — <a href="https://github.com/mongodb-labs/django-mongodb-project" target="_blank" rel="noopener">github.com/mongodb-labs/django-mongodb-project</a></li>
-            <li>Wagtail template — <a href="https://github.com/aclark4life/wagtail-mongodb-project" target="_blank" rel="noopener">github.com/aclark4life/wagtail-mongodb-project</a></li>
-            <li>polls — <a href="https://github.com/aclark4life/polls" target="_blank" rel="noopener">github.com/aclark4life/polls</a></li>
-            <li>medical-records — <a href="https://github.com/aclark4life/medical-records" target="_blank" rel="noopener">github.com/aclark4life/medical-records</a></li>
+            <li>Wagtail template — <a href="https://github.com/aclark4life/wagtail-mongodb-project" target="_blank" rel="noopener">github.com/aclark4life/wagtail-mongodb-project</a> (<a href="https://github.com/mongodb-labs/wagtail-mongodb-project/pull/4" target="_blank" rel="noopener">PR #4</a>)</li>
+            <li>polls app — <a href="https://github.com/aclark4life/polls" target="_blank" rel="noopener">github.com/aclark4life/polls</a></li>
+            <li>medical-records app — <a href="https://github.com/aclark4life/medical-records" target="_blank" rel="noopener">github.com/aclark4life/medical-records</a></li>
             <li>Atlas free tier — <a href="https://www.mongodb.com/atlas" target="_blank" rel="noopener">mongodb.com/atlas</a></li>
           </ul>
           <aside class="notes">
