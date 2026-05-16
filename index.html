@@ -962,7 +962,7 @@ qs = Movie.objects.raw_aggregate(pipeline)  # returns a QuerySet
 for row in qs:                               # row is a Movie instance
     print(row.year, row.count)               # _id + annotated fields
           </code></pre>
-          <p>Full power of the aggregation framework — <code>$lookup</code>, <code>$search</code>, <code>$vectorSearch</code>, …</p>
+          <p class="footnote">Full power of the aggregation framework — <code>$lookup</code>, <code>$search</code>, <code>$vectorSearch</code>, …</p>
           <aside class="notes">
             When the ORM doesn't reach far enough — and sometimes it
             doesn't — raw_aggregate is the escape hatch. You hand it a
