@@ -1032,7 +1032,7 @@ class Customer(models.Model):
             EmbeddedFieldUniqueConstraint("address.zip"),
         ]
           </code></pre>
-          <p>Indexes do the work; the constraint is a thin wrapper over a unique index.</p>
+          <p class="footnote" style="font-size: 0.35em;">Indexes do the work; the constraint is a thin wrapper over a unique index.</p>
           <aside class="notes">
             Two flavors of unique. Django's UniqueConstraint with
             nulls_distinct=True — that means multiple rows with NULL email
@@ -1069,7 +1069,7 @@ class Invoice(models.Model):
     payment = PolymorphicEmbeddedModelField([CardPayment, WirePayment])
     history = PolymorphicEmbeddedModelArrayField([CardPayment, WirePayment])
           </code></pre>
-          <p class="footnote">Indexes &amp; unique constraints on polymorphic subfields are also supported.</p>
+          <p class="footnote" style="font-size: 0.35em;">Indexes &amp; unique constraints on polymorphic subfields are also supported.</p>
           <aside class="notes">
             New in 6.0.3, and it's the feature I get the most questions
             about. Polymorphic embedded fields: an embedded field whose
