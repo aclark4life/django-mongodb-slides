@@ -1285,7 +1285,7 @@ def vote(request, pk):
     question.save()
     return HttpResponseRedirect(reverse("polls:results", args=(question.pk,)))
           </code></pre>
-          <p class="footnote">Mutate the embedded <code>Choice</code> in place, reassign it, save the parent.</p>
+          <p class="footnote" style="font-size: 0.35em;">Mutate the embedded <code>Choice</code> in place, reassign it, save the parent.</p>
           <aside class="notes">
             No second collection, no foreign key, no separate save. Pull
             the Choice out of the array by index, bump its votes,
@@ -1616,7 +1616,7 @@ python manage.py create_patients 5 --skip-checks
         <!-- 45. Demo: settings — INSTALLED_APPS + MIGRATION_MODULES -->
         <section class="densest">
           <h2><code>settings/base.py</code></h2>
-          <pre><code class="language-python" data-trim>
+          <pre style="font-size: 0.28em;"><code class="language-python" data-trim>
 INSTALLED_APPS = [
     "home", "search",
     "demo.apps.MongoWagtailFormsAppConfig",
