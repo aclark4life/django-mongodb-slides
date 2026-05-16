@@ -453,7 +453,7 @@ dropdb:
         </section>
 
         <!-- 13. ORM → MQL (content types & permissions) -->
-        <section>
+        <section class="denser">
           <h2>ORM <span class="accent">→</span> MQL</h2>
           <p>Content types &amp; permissions via the Django ORM.</p>
           <pre><code class="language-python" data-trim>
@@ -538,7 +538,7 @@ perms = Permission.objects.select_related("content_type").filter(
         </section>
 
         <!-- 14. Global vs per-app default_auto_field -->
-        <section class="dense">
+        <section class="denser">
           <h2>Global vs per-app</h2>
           <p>Set it once in <code>settings.py</code> — or per app in <code>AppConfig</code>.</p>
           <div class="two-col">
@@ -633,7 +633,7 @@ DATABASE_ROUTERS = [
               </ul>
             </div>
           </div>
-          <p class="footnote">All of this is what <code>startproject --template</code> writes for you — but you can add it to an existing project by hand.</p>
+          <p class="footnote">All of this is what <code>startproject --template …</code> writes for you — but you can manually add it to an existing project or new project created without the template.</p>
           <aside class="notes">
             This is the concrete payoff of the project template. Three
             things it wires up that you'd otherwise do yourself.
