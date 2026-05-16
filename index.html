@@ -97,7 +97,7 @@
           <h1>Django MongoDB Backend</h1>
           <p class="subtitle">Building Django apps on a document database with <span style="white-space: nowrap;">Django MongoDB Backend</span></p>
           <p class="subtitle"><code>pip install django-mongodb-backend</code></p>
-          <p class="footnote">django-mongodb-backend 6.0.3 · Django 6.0.5 · 🤖 assisted</p>
+          <p class="footnote">django-mongodb-backend 6.0.3 · Django 6.0.5 · assisted</p>
           <aside class="notes">
             Hi everyone — thanks for coming. I'm Alex Clark, a Senior Software Engineer
             on MongoDB's Database Experience Team, and today we're going to talk about
@@ -128,13 +128,13 @@
           <ul class="tight">
             <li class="fragment">Install library &amp; start project</li>
             <li class="fragment">Start MongoDB local or Atlas</li>
-            <li class="fragment">🤖 Meet Django MongoDB Backend</li>
-            <li class="fragment">🤖 Why MongoDB for a Django app?</li>
-            <li class="fragment">🤖 Modeling: embedded docs, arrays, ObjectIds</li>
-            <li class="fragment">🤖 Querying &amp; aggregation</li>
-            <li class="fragment">🤖 Indexes &amp; unique constraints</li>
-            <li class="fragment">🤖 What's new in 6.0: encryption, geo, polymorphism</li>
-            <li class="fragment">🤖 Limitations &amp; resources</li>
+            <li class="fragment">Meet Django MongoDB Backend</li>
+            <li class="fragment">Why MongoDB for a Django app?</li>
+            <li class="fragment">Modeling: embedded docs, arrays, ObjectIds</li>
+            <li class="fragment">Querying &amp; aggregation</li>
+            <li class="fragment">Indexes &amp; unique constraints</li>
+            <li class="fragment">What's new in 6.0: encryption, geo, polymorphism</li>
+            <li class="fragment">Limitations &amp; resources</li>
             <li class="fragment">Demo: <code>polls</code> app</li>
             <li class="fragment">Demo: <code>medical-records</code> app</li>
             <li class="fragment">Demo: <code>wagtail-mongodb-project</code></li>
@@ -390,7 +390,7 @@ dropdb:
 
         <!-- 11. Meet the backend -->
         <section class="top-align">
-          <h2>🤖 Meet Django MongoDB Backend <span class="fragment">🎉</span><span class="fragment">🎉</span><span class="fragment">🎉</span></h2>
+          <h2>Meet Django MongoDB Backend <span class="fragment">🎉</span><span class="fragment">🎉</span><span class="fragment">🎉</span></h2>
           <ul class="tight" style="font-size: 0.75em;">
             <li class="fragment">Built on PyMongo</li>
             <li class="fragment">Tracks Django releases: <span class="pill">5.2</span> <span class="pill">6.0</span></li>
@@ -755,7 +755,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
 
         <!-- 18. Why MongoDB -->
         <section>
-          <h2>🤖 Why MongoDB?</h2>
+          <h2>Why MongoDB?</h2>
           <div class="two-col">
             <div>
               <h3>Document model</h3>
@@ -790,7 +790,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
 
         <!-- 19. Why Django on MongoDB -->
         <section>
-          <h2>🤖 Django on MongoDB?</h2>
+          <h2>Django on MongoDB?</h2>
           <ul class="tight">
             <li>Keep what you love: ORM, admin, migrations, forms, auth</li>
             <li>Gain document-native modeling: <code>EmbeddedModelField</code>, <code>ArrayField</code>, <code>ObjectIdField</code></li>
@@ -816,7 +816,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
 
         <!-- 20. First model -->
         <section>
-          <h2>🤖 Your first model</h2>
+          <h2>Your first model</h2>
           <pre><code class="language-python" data-trim>
 from django.db import models
 
@@ -848,7 +848,7 @@ class Movie(models.Model):
 
         <!-- 21. Embedded models -->
         <section>
-          <h2>🤖 Embedded documents</h2>
+          <h2>Embedded documents</h2>
           <pre><code class="language-python" data-trim>
 from django_mongodb_backend.fields import EmbeddedModelField
 from django_mongodb_backend.models import EmbeddedModel
@@ -882,7 +882,7 @@ class Customer(models.Model):
 
         <!-- 22. Embedded arrays -->
         <section>
-          <h2>🤖 Arrays of embedded docs</h2>
+          <h2>Arrays of embedded docs</h2>
           <pre><code class="language-python" data-trim>
 from django_mongodb_backend.fields import (
     ArrayField,
@@ -920,7 +920,7 @@ class Order(models.Model):
 
         <!-- 23. Querying -->
         <section>
-          <h2>🤖 Querying</h2>
+          <h2>Querying</h2>
           <pre><code class="language-python" data-trim>
 # Top-level fields
 Movie.objects.filter(year__gte=2020).order_by("-year")[:10]
@@ -950,7 +950,7 @@ print(Movie.objects.filter(year=2024).query)
 
         <!-- 24. Aggregation -->
         <section>
-          <h2>🤖 When you need MQL: <code>raw_aggregate</code></h2>
+          <h2>When you need MQL: <code>raw_aggregate</code></h2>
           <pre><code class="language-python" data-trim>
 pipeline = [
     {"$match": {"year": {"$gte": 2020}}},
@@ -980,7 +980,7 @@ for row in qs:                               # row is a Movie instance
 
         <!-- 25. Indexes -->
         <section>
-          <h2>🤖 Indexes — including embedded fields</h2>
+          <h2>Indexes — including embedded fields</h2>
           <pre><code class="language-python" data-trim>
 from django_mongodb_backend.indexes import EmbeddedFieldIndex
 
@@ -1011,7 +1011,7 @@ class Customer(models.Model):
 
         <!-- 26. Unique constraints -->
         <section class="dense">
-          <h2>🤖 Unique constraints</h2>
+          <h2>Unique constraints</h2>
           <pre><code class="language-python" data-trim>
 from django.db.models import UniqueConstraint
 from django_mongodb_backend.constraints import EmbeddedFieldUniqueConstraint
@@ -1049,7 +1049,7 @@ class Customer(models.Model):
 
         <!-- 27. Polymorphic embedded -->
         <section class="dense">
-          <h2>🤖 Polymorphic embedded models <span class="pill">6.0.3</span></h2>
+          <h2>Polymorphic embedded models <span class="pill">6.0.3</span></h2>
           <pre><code class="language-python" data-trim>
 from django_mongodb_backend.fields import (
     PolymorphicEmbeddedModelField,
@@ -1088,7 +1088,7 @@ class Invoice(models.Model):
 
         <!-- 28. Queryable Encryption -->
         <section>
-          <h2>🤖 Queryable Encryption <span class="pill">6.0.1</span></h2>
+          <h2>Queryable Encryption <span class="pill">6.0.1</span></h2>
           <ul class="tight">
             <li>Encrypt fields client-side; query them <em>without</em> decrypting server-side</li>
             <li>Declared on the model, enforced by the backend</li>
@@ -1121,7 +1121,7 @@ class Patient(models.Model):
 
         <!-- 29. Spatial -->
         <section>
-          <h2>🤖 Spatial lookups <span class="pill">6.0.1</span></h2>
+          <h2>Spatial lookups <span class="pill">6.0.1</span></h2>
           <pre><code class="language-python" data-trim>
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
@@ -1148,7 +1148,7 @@ Cafe.objects.filter(
 
         <!-- 30. Admin -->
         <section>
-          <h2>🤖 The Django admin… still works!</h2>
+          <h2>The Django admin… still works!</h2>
           <ul class="tight">
             <li>Register models exactly as you always have</li>
             <li>Embedded fields render as nested forms</li>
@@ -1177,7 +1177,7 @@ urlpatterns = [
 
         <!-- 31. Limitations -->
         <section>
-          <h2>🤖 Limitations</h2>
+          <h2>Limitations</h2>
           <ul class="tight">
             <li>No SQL — some third-party apps that emit raw SQL won't work</li>
             <li>Cross-collection joins exist, but you'll lean on embedding</li>
