@@ -620,7 +620,7 @@ from django_mongodb_backend.models import EmbeddedModel
 class Address(EmbeddedModel):
     street = models.CharField(max_length=200)
     city = models.CharField(max_length=100)
-    zip = models.CharField(max_length=20)
+    zipcode = models.CharField(max_length=20)
 
 
 class Customer(models.Model):
@@ -744,7 +744,7 @@ class Customer(models.Model):
                 name="uniq_email",
                 nulls_distinct=True,
             ),
-            EmbeddedFieldUniqueConstraint("address.zip"),
+            EmbeddedFieldUniqueConstraint("address.zipcode"),
         ]
           </code></pre>
           <p class="footnote" style="font-size: 0.35em;">Indexes do the work; the constraint is a thin wrapper over a unique index.</p>
