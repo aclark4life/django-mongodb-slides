@@ -31,13 +31,17 @@ just open
 ```
 $ just
 Available recipes:
-    clean        # Remove the generated demo project directory (start fresh with `just startproject`)
+    clean        # Remove the generated demo project directory (start fresh with `just startproject`) [alias: c]
+    dbshell      # Open a MongoDB shell against the demo database [alias: d]
     default      # List available recipes
-    dropdb       # Drop the demo database (handy between demos)
-    migrate      # Apply migrations against the demo database
-    open         # Open the slides in the default browser
-    runserver    # Run the Django dev server with MONGODB_URI wired up
-    startproject # Scaffold the demo project from the local template
+    dropdb       # Drop the demo database (handy between demos) [alias: x]
+    migrate      # Apply migrations against the demo database [alias: m]
+    open         # Open the slides in the default browser [alias: o]
+    polls        # Install polls, wire it into the demo project's settings + urls, and seed data [alias: p]
+    runserver    # Run the Django dev server with MONGODB_URI wired up [alias: r]
+    shell        # Open a Django shell against the demo database (IPython, vi key bindings) [alias: h]
+    startproject # Scaffold the demo project from the mongodb-labs/django-mongodb-project template [alias: s]
+    su           # Create Django superuser (admin / admin) [alias: u]
 ```
 
 The private `_uri` recipe (hidden from `--list`) reuses a running
@@ -49,9 +53,9 @@ wire that URI into `MONGODB_URI` — the same env var the generated
 ## Demo workflow
 
 ```bash
-just startproject     # scaffold ./demo from templates/project_template
-just migrate          # starts mongodb-runner if needed, runs migrate
-just runserver        # http://127.0.0.1:8000/
+just startproject     # scaffold ./demo from the mongodb-labs project template
+just polls            # install & wire up the polls app, run migrate, seed data
+just runserver        # http://127.0.0.1:8000/polls/
 
 just dropdb           # wipe the database between runs
 just clean            # rm -rvf demo
@@ -69,9 +73,7 @@ just clean            # rm -rvf demo
 - Docs — [django-mongodb-backend.readthedocs.io](https://django-mongodb-backend.readthedocs.io/)
 - Source — [github.com/mongodb/django-mongodb-backend](https://github.com/mongodb/django-mongodb-backend)
 - Project template — [github.com/mongodb-labs/django-mongodb-project](https://github.com/mongodb-labs/django-mongodb-project)
-- Wagtail template — [github.com/aclark4life/wagtail-mongodb-project](https://github.com/aclark4life/wagtail-mongodb-project)
 - `polls` — [github.com/aclark4life/polls](https://github.com/aclark4life/polls)
-- `medical-records` — [github.com/aclark4life/medical-records](https://github.com/aclark4life/medical-records)
 - Atlas free tier — [mongodb.com/atlas](https://www.mongodb.com/atlas)
 
 ## License
