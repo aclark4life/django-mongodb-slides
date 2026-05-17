@@ -602,7 +602,6 @@ class Movie(models.Model):
     class Meta:
         indexes = [models.Index(fields=["year", "title"])]
           </code></pre>
-          <button class="copy-btn" data-copy>📋 Copy</button>
           <p class="footnote">A standard Django model — no new API to learn. The backend stores each instance as a MongoDB document, and <code>id</code> is automatically a BSON <code>ObjectId</code> rather than an integer.</p>
           <aside class="notes">
             A model targeting MongoDB is syntactically identical to any Django model. No new API is required. The backend stores each instance as a document in a MongoDB collection. The id field is automatically a BSON ObjectId rather than an integer when ObjectIdAutoField is configured as the default.
