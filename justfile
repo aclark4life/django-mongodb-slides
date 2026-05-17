@@ -83,3 +83,15 @@ clean:
 # Open the slides in the default browser
 open:
     open index.html
+
+# Aliases
+alias s := startproject
+alias p := polls
+alias r := runserver
+alias m := migrate
+alias u := su
+alias h := shell
+alias d := dbshell
+alias x := dropdb
+alias c := clean
+alias o := open
