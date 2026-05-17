@@ -99,7 +99,7 @@
           <p class="subtitle"><code>pip install django-mongodb-backend</code></p>
           <p class="footnote">django-mongodb-backend 6.0.3 · Django 6.0.5 · assisted</p>
           <aside class="notes">
-            Alex Clark, Database Experience Team. Tonight's claim: Django on MongoDB is a first-class backend — not a hack — that lets you keep the ORM, admin, and migrations while gaining document-native modeling. Demoing against django-mongodb-backend 6.0.3 + Django 6.0.5.
+            Speaker Notes
           </aside>
         </section>
 
@@ -121,7 +121,7 @@
             <li class="fragment">Demo: <code>bakerydemo</code></li>
           </ul>
           <aside class="notes">
-            Three blocks: why MongoDB + this backend; day-to-day mechanics (modeling, querying, indexes); what's new in 6.0. Closes with honest limitations.
+            Speaker Notes
           </aside>
         </section>
 
@@ -137,7 +137,7 @@ pip install "django-mongodb-backend==6.0.*"  # Django 6.0
 pip install "django-mongodb-backend==5.2.*"  # Django 5.2
           </code></pre>
           <aside class="notes">
-            Match the version to your Django series — 6.0.* for Django 6.0, 5.2.* for Django 5.2.
+            Speaker Notes
           </aside>
         </section>
 
@@ -152,7 +152,7 @@ django-admin startproject -v 3 demo \
           <button class="copy-btn" data-copy>📋 Copy command</button>
           <p class="footnote">The project template configures <code>DATABASES</code> (MongoDB connection via <code>MONGODB_URI</code>), <code>DEFAULT_AUTO_FIELD</code> (<code>ObjectIdAutoField</code> for every model), <code>INSTALLED_APPS</code> (custom <code>AppConfig</code> subclasses so contrib apps use ObjectId PKs), <code>MIGRATION_MODULES</code> (ObjectId-friendly copies of auth, admin &amp; contenttypes migrations), and <code>DATABASE_ROUTERS</code> (<code>MongoRouter</code> to keep embedded models off <code>migrate</code>).</p>
           <aside class="notes">
-            One command and you have a working Django + MongoDB project. The template pre-configures DATABASES, DEFAULT_AUTO_FIELD, INSTALLED_APPS, MIGRATION_MODULES, and DATABASE_ROUTERS for you.
+            Speaker Notes
           </aside>
         </section>
 
@@ -164,7 +164,7 @@ django-admin startproject -v 3 demo \
             <img class="fragment" src="assets/startproject-screenshot2.png" alt="Annotated: empty 'with filenames:' line circled" style="position: absolute; top: 0; left: 0; max-height: 50vh; border-radius: 6px;" />
           </div>
           <aside class="notes">
-            -v 3 shows every rendered file — notice the empty "with filenames:" line, which is where --name entries would appear.
+            Speaker Notes
           </aside>
         </section>
 
@@ -184,7 +184,7 @@ django-admin startproject -v 3 demo \
           </code></pre>
           <p class="footnote">Not MongoDB-specific — just thought it was interesting 🙂</p>
           <aside class="notes">
-            Pass --name for files that need template variable substitution but have no standard extension — Dockerfile, Procfile, .env.example, etc.
+            Speaker Notes
           </aside>
         </section>
 
@@ -211,7 +211,7 @@ mongodb-runner exec -t standalone -- sh -c 'python manage.py migrate'
           </code></pre>
           <p class="footnote">Requires Node.js ≥ 20.19. Downloads the MongoDB binary on first run, caches it after. Source: <a href="https://github.com/mongodb-js/devtools-shared/tree/main/packages/mongodb-runner" target="_blank" rel="noopener">mongodb-js/devtools-shared</a>.</p>
           <aside class="notes">
-            mongodb-runner is the fastest local MongoDB — npm install once, then start/stop/exec. Use -t replset for transactions. The exec subcommand sets MONGODB_URI in the environment before running your command, making CI one-liners trivial.
+            Speaker Notes
           </aside>
         </section>
 
@@ -235,7 +235,7 @@ mongodb-runner exec -t standalone -- sh -c 'mongosh $MONGODB_URI'
           </code></pre>
           <p class="footnote">Replaces the legacy <code>mongo</code> shell. Also available via Homebrew and the MongoDB downloads page.</p>
           <aside class="notes">
-            mongosh is the official shell — same URI as Django's DATABASES["HOST"]. Use --quiet --eval for one-shot scripts; combine with mongodb-runner exec to spin up a server and a shell in one step.
+            Speaker Notes
           </aside>
         </section>
 
@@ -264,7 +264,7 @@ INSTALLED_APPS = [
           </code></pre>
           <p class="footnote"><code>HOST</code> accepts any MongoDB connection string — including Atlas SRV URIs and TLS options. Read it from the environment so secrets stay out of the repo.</p>
           <aside class="notes">
-            Three settings: HOST takes any MongoDB URI (read from the environment so credentials stay out of the repo); DEFAULT_AUTO_FIELD gives every model an ObjectId PK; adding django_mongodb_backend to INSTALLED_APPS registers system checks and management commands.
+            Speaker Notes
           </aside>
         </section>
 
@@ -292,7 +292,7 @@ dropdb:
           </code></pre>
           <p class="footnote"><code>$(just _uri)</code> calls a private recipe that finds (or starts) a <code>mongodb-runner</code> instance and prints its URI.</p>
           <aside class="notes">
-            $(just _uri) calls a private recipe that finds or starts a mongodb-runner instance and prints its URI — the same value settings.py reads from MONGODB_URI.
+            Speaker Notes
           </aside>
         </section>
 
@@ -315,7 +315,7 @@ dropdb:
             </li>
           </ul>
           <aside class="notes">
-            Key distinction: this is a Django database backend — the same plug point as postgres or sqlite — not an ODM bolt-on. The ORM, admin, migrations, and third-party apps that go through the ORM all just work.
+            Speaker Notes
           </aside>
         </section>
 
@@ -337,7 +337,7 @@ dropdb:
           </code></pre>
           <p class="footnote">Each node in Django's query tree gets an <code>as_mql()</code> method (mirroring <code>as_sql()</code>); the compiler walks the tree to build the pipeline. Use <code>qs.explain()</code> for the executed plan.</p>
           <aside class="notes">
-            str(qs.query) prints the actual MQL pipeline — icontains → $regexMatch, order_by → $sort, slicing → $limit. New in 6.0. Use qs.explain() for the executed plan with index stats.
+            Speaker Notes
           </aside>
         </section>
 
@@ -364,7 +364,7 @@ perms = Permission.objects.select_related("content_type").filter(
           </code></pre>
           <button class="copy-btn" data-copy>📋 Copy</button>
           <aside class="notes">
-            ContentType and Permission are standard Django ORM models — they work identically against MongoDB. select_related across collections becomes a $lookup stage; no special handling needed.
+            Speaker Notes
           </aside>
         </section>
 
@@ -400,7 +400,7 @@ perms = Permission.objects.select_related("content_type").filter(
           </div>
           <p class="footnote">ObjectId = 4-byte Unix timestamp · 5-byte random · 3-byte counter (12 bytes total).</p>
           <aside class="notes">
-            ObjectId is 12 bytes, timestamp-prefixed, generated client-side — sorts ~chronologically, scales cleanly under sharding, and is MongoDB's native _id type on the wire.
+            Speaker Notes
           </aside>
         </section>
 
@@ -438,7 +438,7 @@ class BlogConfig(AppConfig):
           </div>
           <p class="footnote">Model <code>pk</code> &gt; App <code>default_auto_field</code> &gt; <code>DEFAULT_AUTO_FIELD</code></p>
           <aside class="notes">
-            Precedence: model pk field > app default_auto_field > global DEFAULT_AUTO_FIELD. Contrib apps (auth, admin, contenttypes) default to BigAutoField — the project template subclasses their AppConfigs to override this.
+            Speaker Notes
           </aside>
         </section>
 
@@ -486,7 +486,7 @@ DATABASE_ROUTERS = [
           </div>
           <p class="footnote">All of this is what <code>startproject --template …</code> writes for you — but you can manually add it to an existing project or a new project created without the template.</p>
           <aside class="notes">
-            Three things the template wires up: (1) custom AppConfigs that flip contrib apps to ObjectIdAutoField; (2) MIGRATION_MODULES pointing to ObjectId-friendly migration copies; (3) MongoRouter to keep embedded models off migrate.
+            Speaker Notes
           </aside>
         </section>
 
@@ -514,7 +514,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
           </code></pre>
           <p class="footnote" style="font-size: 0.35em;">Three one-line subclasses — exactly the per-app override pattern from the previous slide.</p>
           <aside class="notes">
-            Three one-line subclasses — each overrides default_auto_field to ObjectIdAutoField. This is Django's documented escape hatch; editing contrib apps directly would break backwards compatibility.
+            Speaker Notes
           </aside>
         </section>
 
@@ -541,7 +541,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
           </div>
           <p class="footnote">The project template includes all three of these changes.</p>
           <aside class="notes">
-            Summary: subclass AppConfigs → ObjectId PKs; redirect MIGRATION_MODULES → ObjectId-friendly migrations; add MongoRouter → embedded models excluded from migrate.
+            Speaker Notes
           </aside>
         </section>
 
@@ -567,7 +567,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
             </div>
           </div>
           <aside class="notes">
-            Document model: schema fits the object, not vice versa — nested data without join tables, flexible evolution. Operations: sharding, replica sets, ACID transactions, and Atlas managed search + vector search.
+            Speaker Notes
           </aside>
         </section>
 
@@ -582,7 +582,7 @@ class MongoContentTypesConfig(ContentTypesConfig):
           </ul>
           <p class="footnote">Repo: <a href="https://github.com/mongodb/django-mongodb-backend" target="_blank" rel="noopener">github.com/mongodb/django-mongodb-backend</a></p>
           <aside class="notes">
-            You keep everything you love about Django and gain document-native modeling (EmbeddedModelField, ArrayField, ObjectIdField) plus raw_aggregate for full MQL power. Officially maintained by MongoDB.
+            Speaker Notes
           </aside>
         </section>
 
@@ -605,7 +605,7 @@ class Movie(models.Model):
           <button class="copy-btn" data-copy>📋 Copy</button>
           <p class="footnote">A standard Django model — no new API to learn. The backend stores each instance as a MongoDB document, and <code>id</code> is automatically a BSON <code>ObjectId</code> rather than an integer.</p>
           <aside class="notes">
-            A standard Django model — nothing new to learn. The only invisible difference: id is an ObjectId, not an integer, because of DEFAULT_AUTO_FIELD. One document per movie, one collection on disk.
+            Speaker Notes
           </aside>
         </section>
 
@@ -629,7 +629,7 @@ class Customer(models.Model):
           </code></pre>
           <p class="footnote"><code>Address</code> is stored inside the <code>Customer</code> document — no separate collection, no join. <code>customer.address.city</code> is a plain Python attribute lookup that maps directly to a MongoDB field path.</p>
           <aside class="notes">
-            EmbeddedModel has no backing collection — it lives inside its parent. Address is stored inside the Customer document; customer.address.city is one Python attribute lookup and one MongoDB field path. No joins, no extra queries.
+            Speaker Notes
           </aside>
         </section>
 
@@ -656,7 +656,7 @@ class Order(models.Model):
           </code></pre>
           <p class="footnote">Loading an <code>Order</code> fetches its embedded <code>LineItem</code> array and scalar <code>tags</code> in a single document read — no joins, no extra queries.</p>
           <aside class="notes">
-            EmbeddedModelArrayField: array of structured subdocuments (LineItem). ArrayField: array of scalars (tags). One document read loads the entire Order — no join to an order_items table.
+            Speaker Notes
           </aside>
         </section>
 
@@ -677,7 +677,7 @@ Order.objects.filter(tags__contains=["priority"])
 print(Movie.objects.filter(year=2024).query)
           </code></pre>
           <aside class="notes">
-            Same ORM syntax you already know — filter, order_by, slicing. Reach into embedded documents with double-underscore traversal (address__city). Print qs.query to see the MQL pipeline.
+            Speaker Notes
           </aside>
         </section>
 
@@ -697,7 +697,7 @@ for row in qs:                               # row is a Movie instance
           </code></pre>
           <p class="footnote">Full power of the aggregation framework — <code>$lookup</code>, <code>$search</code>, <code>$vectorSearch</code>, …</p>
           <aside class="notes">
-            raw_aggregate hands a full MQL pipeline to the backend and returns model instances. Full aggregation framework available — $lookup, $search, $vectorSearch — without dropping to PyMongo.
+            Speaker Notes
           </aside>
         </section>
 
@@ -720,7 +720,7 @@ class Customer(models.Model):
           </code></pre>
           <p class="footnote">New in 6.0.2: index/uniqueness on subfields of embedded &amp; embedded-array fields.</p>
           <aside class="notes">
-            EmbeddedFieldIndex (new in 6.0.2) indexes a dotted subfield path. Any filter or sort on address__city will use it — previously a notable gap for hot query paths on embedded docs.
+            Speaker Notes
           </aside>
         </section>
 
@@ -749,7 +749,7 @@ class Customer(models.Model):
           </code></pre>
           <p class="footnote" style="font-size: 0.35em;">Indexes do the work; the constraint is a thin wrapper over a unique index.</p>
           <aside class="notes">
-            nulls_distinct=True allows multiple NULL emails while deduping non-nulls. EmbeddedFieldUniqueConstraint enforces uniqueness on an embedded subfield (address.zip) via a unique index on the dotted path.
+            Speaker Notes
           </aside>
         </section>
 
@@ -777,7 +777,7 @@ class Invoice(models.Model):
           </code></pre>
           <p class="footnote" style="font-size: 0.35em;">Indexes &amp; unique constraints on polymorphic subfields are also supported.</p>
           <aside class="notes">
-            New in 6.0.3. A polymorphic embedded field stores a class discriminator alongside the data; on read the backend reconstructs the correct model class — CardPayment with .last4 or WirePayment with .iban.
+            Speaker Notes
           </aside>
         </section>
 
@@ -798,7 +798,7 @@ class Patient(models.Model):
     ssn = EncryptedCharField(max_length=11, queries={"queryType": "equality"})
           </code></pre>
           <aside class="notes">
-            Fields are encrypted client-side; the server only ever sees ciphertext, yet equality queries still work. Declare it on the model with EncryptedCharField. Migrations refuse to run against a non-encrypted database — a built-in guardrail.
+            Speaker Notes
           </aside>
         </section>
 
@@ -816,7 +816,7 @@ Cafe.objects.filter(
           </code></pre>
           <p class="footnote">GeoDjango-style queries, MongoDB-native execution.</p>
           <aside class="notes">
-            GeoDjango-style API (dwithin, intersects, within, contains) executed natively on a MongoDB 2dsphere index. contrib.gis support is partial — see the Limitations slide.
+            Speaker Notes
           </aside>
         </section>
 
@@ -835,7 +835,7 @@ urlpatterns = [
 ]
           </code></pre>
           <aside class="notes">
-            The Django admin works as-is — register models normally, embedded fields render as nested inline forms. As of 6.0.3, the &lt;objectid:pk&gt; URL path converter is registered automatically.
+            Speaker Notes
           </aside>
         </section>
 
@@ -850,7 +850,7 @@ urlpatterns = [
           </ul>
           <p class="footnote">Check the docs' "Known issues" page before porting a large app.</p>
           <aside class="notes">
-            Third-party apps that emit raw SQL won't work. Embed first — heavy $lookup usage fights MongoDB's strengths. contrib.gis is partial. Check the docs' "Known issues" page before porting a large app.
+            Speaker Notes
           </aside>
         </section>
 
@@ -867,7 +867,7 @@ urlpatterns = [
           </ul>
           <p class="footnote">Source: <a href="https://github.com/aclark4life/polls/tree/main/polls" target="_blank" rel="noopener">github.com/aclark4life/polls/tree/main/polls</a></p>
           <aside class="notes">
-            The Django tutorial polls app ported to django-mongodb-backend — covers embedded models, ArrayField, raw_aggregate, and Atlas Search with a local fallback.
+            Speaker Notes
           </aside>
         </section>
 
@@ -908,7 +908,7 @@ class Question(models.Model):
           </code></pre>
           <p class="footnote">One collection, one document per question — choices and tags live inside.</p>
           <aside class="notes">
-            Three MongoDB-specific things: Choice as EmbeddedModel, choices as EmbeddedModelArrayField, tags as ArrayField of strings. MongoManager unlocks raw_aggregate; SearchIndex declares the Atlas Search index.
+            Speaker Notes
           </aside>
         </section>
 
@@ -930,7 +930,7 @@ def vote(request, pk):
           </code></pre>
           <p class="footnote" style="font-size: 0.35em;">Mutate the embedded <code>Choice</code> in place, reassign it, save the parent.</p>
           <aside class="notes">
-            Mutate the embedded Choice, reassign it in the array, save the Question — one round-trip, no second collection. The form uses list index to identify the choice, so don't reorder between GET and POST.
+            Speaker Notes
           </aside>
         </section>
 
@@ -962,7 +962,7 @@ class AnalyticsView(TemplateView):
           </code></pre>
           <p class="footnote"><code>$sum: "$choices.votes"</code> sums across the embedded array — no extra queries.</p>
           <aside class="notes">
-            raw_aggregate projects a year and a per-question vote total ($sum across the embedded choices array). Results come back as Question instances with the extra computed attributes attached.
+            Speaker Notes
           </aside>
         </section>
 
@@ -992,7 +992,7 @@ class SearchView(TemplateView):
           </code></pre>
           <p class="footnote" style="font-size: 0.35em;">Atlas: <code>$search</code>. Local replica set: <code>__icontains</code> + a banner.</p>
           <aside class="notes">
-            On Atlas, SearchText hits the $search index. On a local replica set, falls back to __icontains and surfaces a "fallback" banner in the template — same view, no crash in dev.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1014,7 +1014,7 @@ python manage.py create_polls_search_index   # Atlas only
 python manage.py runserver  # then visit /polls/
           </code></pre>
           <aside class="notes">
-            seed_polls seeds sample data; create_polls_search_index is Atlas-only. Visit /polls/, /polls/search/, /polls/analytics/ to exercise each feature.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1030,7 +1030,7 @@ python manage.py runserver  # then visit /polls/
           </ul>
           <p class="footnote">Source: <a href="https://github.com/aclark4life/medical-records" target="_blank" rel="noopener">github.com/aclark4life/medical-records</a></p>
           <aside class="notes">
-            Same structure as polls, but the focus is field-level encryption. SSN and billing are encrypted client-side via libmongocrypt before they hit the wire, using a separate "encrypted" DATABASES alias.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1065,7 +1065,7 @@ class Billing(EmbeddedModel):
           </code></pre>
           <p class="footnote">Encrypted fields are declared like any other field — no schema gymnastics in app code.</p>
           <aside class="notes">
-            Patient → PatientRecord → Billing, all via EmbeddedModelField. The sensitive bits (ssn, billing) use Encrypted* variants; everything else is stock Django.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1094,7 +1094,7 @@ patient.save()  # ssn + billing encrypted client-side before the write
           </code></pre>
           <p class="footnote" style="font-size: 0.35em;">App code is unchanged — encryption happens transparently in the driver.</p>
           <aside class="notes">
-            Build Python objects exactly as you would without QE — libmongocrypt encrypts marked fields before they leave the client, decrypts on read. ssn and billing appear as ciphertext on disk; other fields remain readable.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1125,7 +1125,7 @@ class EncryptedRouter:
           </code></pre>
           <p class="footnote" style="font-size: 0.35em;">Add to <code>DATABASE_ROUTERS</code> — reads/writes find the right DB automatically (no <code>using=</code>). Migrations still run per-database: <code>migrate</code> + <code>migrate --database encrypted</code>; <code>allow_migrate</code> just decides which models apply to each.</p>
           <aside class="notes">
-            model_has_encrypted_fields walks a model's fields for any Encrypted* variant. db_for_read/write routes queries automatically (no using= needed). Run migrate twice — once per alias — allow_migrate ensures each invocation only touches the right models.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1148,7 +1148,7 @@ python manage.py create_patients 5
 # but Patient.objects.filter(patient_record__ssn=...) still works.
           </code></pre>
           <aside class="notes">
-            Two migrate invocations, one per alias. Equality queries on encrypted ssn still work because EncryptedCharField uses deterministic encryption under the hood.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1174,7 +1174,7 @@ if not options["skip_checks"] and not self._encrypted_collections_exist():
 python manage.py create_patients 5 --skip-checks
           </code></pre>
           <aside class="notes">
-            QE only activates when the collection is created with encryptedFields metadata — that happens during migrate. Skip it and MongoDB creates a plain collection; SSNs land in plaintext. The preflight check guards against this. --skip-checks lets you demo the failure mode deliberately.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1190,7 +1190,7 @@ python manage.py create_patients 5 --skip-checks
           </ul>
           <p class="footnote" style="font-size: 0.35em;">Source: <a href="https://github.com/aclark4life/wagtail-mongodb-project" target="_blank" rel="noopener">github.com/aclark4life/wagtail-mongodb-project</a></p>
           <aside class="notes">
-            The django-mongodb-project template pattern applied to Wagtail — subclasses all Wagtail AppConfigs, redirects all wagtail* migrations, includes an init command to recreate root/home/site data that data migrations would normally create.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1235,7 +1235,7 @@ MIGRATION_MODULES = {
           </code></pre>
           <p class="footnote">Same pattern as <code>django-mongodb-project</code> — just multiplied across Wagtail's contrib apps.</p>
           <aside class="notes">
-            The AppConfig + MIGRATION_MODULES recipe from the django-mongodb-project slide, applied 13 times — once for each Wagtail contrib app and taggit.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1254,7 +1254,7 @@ python manage.py createsuperuser
 python manage.py runserver            # /admin/ for Wagtail CMS
           </code></pre>
           <aside class="notes">
-            One startproject, one migrate, one init — working Wagtail CMS on MongoDB. init is the only extra step; it recreates Wagtail's root page and default site that data migrations would normally seed.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1287,7 +1287,7 @@ MIGRATION_MODULES.update({
           </code></pre>
           <p class="footnote">Same <code>INSTALLED_APPS</code> + <code>MIGRATION_MODULES</code> recipe as Wagtail's own apps — applied to bakerydemo's content apps.</p>
           <aside class="notes">
-            Upstream bakerydemo is unmodified — just add its apps to INSTALLED_APPS and redirect their MIGRATION_MODULES so makemigrations regenerates ObjectId-friendly migrations.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1309,7 +1309,7 @@ python manage.py init                 # seeds breads, blog, locations, ...
 python manage.py runserver
           </code></pre>
           <aside class="notes">
-            bakerydemo isn't on PyPI — make it importable with a one-line .pth file. makemigrations generates ObjectId-friendly migrations on first run. init seeds content programmatically because bakerydemo's fixture uses integer PKs.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1328,7 +1328,7 @@ python manage.py runserver
             <li><code>django-mongodb-extensions</code> — <a href="https://pypi.org/project/django-mongodb-extensions/" target="_blank" rel="noopener">pypi.org/project/django-mongodb-extensions</a></li>
           </ul>
           <aside class="notes">
-            Read the docs — they're the source of truth per release. Atlas M0 free tier covers everything shown today. Star the repo for release notifications.
+            Speaker Notes
           </aside>
         </section>
 
@@ -1344,7 +1344,7 @@ python manage.py runserver
   email    : "alex.clark@mongodb.com" }
           </code></pre>
           <aside class="notes">
-            Open the floor for questions. Email is in the bio — reach out if you hit something not covered or want a feature; we read every issue and the roadmap is shaped by what people ask for.
+            Speaker Notes
           </aside>
         </section>
 
