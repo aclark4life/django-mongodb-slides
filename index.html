@@ -148,9 +148,9 @@ django-admin startproject -v 3 demo \
   --template https://github.com/mongodb-labs/django-mongodb-project/archive/refs/heads/6.0.x.zip
           </code></pre>
           <button class="copy-btn" data-copy>📋 Copy command</button>
-          <p class="footnote">The project template configures <code>DATABASES</code> (MongoDB connection via <code>MONGODB_URI</code>), <code>DEFAULT_AUTO_FIELD</code> (<code>ObjectIdAutoField</code> for every model), <code>INSTALLED_APPS</code> (custom <code>AppConfig</code> subclasses so contrib apps use ObjectId PKs), <code>MIGRATION_MODULES</code> (ObjectId-friendly copies of auth, admin &amp; contenttypes migrations), and <code>DATABASE_ROUTERS</code> (<code>MongoRouter</code> to keep embedded models off <code>migrate</code>).</p>
+          <p class="footnote">The project template configures <code>DATABASES</code> (<code>HOST</code> hardcoded to <code>mongodb://localhost:27017/</code>), <code>DEFAULT_AUTO_FIELD</code> (<code>ObjectIdAutoField</code> for every model), <code>INSTALLED_APPS</code> (custom <code>AppConfig</code> subclasses so contrib apps use ObjectId PKs), <code>MIGRATION_MODULES</code> (ObjectId-friendly copies of auth, admin &amp; contenttypes migrations), and <code>DATABASE_ROUTERS</code> (<code>MongoRouter</code> to keep embedded models off <code>migrate</code>).</p>
           <aside class="notes">
-            The project template handles all initial configuration. It writes the DATABASES setting to read the connection URI from the MONGODB_URI environment variable, sets DEFAULT_AUTO_FIELD to ObjectIdAutoField, installs custom AppConfig subclasses for contrib apps, redirects MIGRATION_MODULES to ObjectId-compatible migration copies, and adds MongoRouter to DATABASE_ROUTERS.
+            The project template handles all initial configuration. It writes the DATABASES setting with HOST hardcoded to mongodb://localhost:27017/, sets DEFAULT_AUTO_FIELD to ObjectIdAutoField, installs custom AppConfig subclasses for contrib apps, redirects MIGRATION_MODULES to ObjectId-compatible migration copies, and adds MongoRouter to DATABASE_ROUTERS. The template does not use MONGODB_URI; the justfile's startproject recipe rewrites HOST to read from the MONGODB_URI environment variable as a follow-up step.
           </aside>
         </section>
 
