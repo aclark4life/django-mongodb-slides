@@ -2,6 +2,8 @@
 
 ![Title slide](assets/slide1-01.png)
 
+Video — [An Evening of Python Coding 2026 05 19](https://www.youtube.com/watch?v=mA-UgdzqMIY)
+
 A [reveal.js](https://revealjs.com/) slide deck on building Django apps
 on MongoDB with [`django-mongodb-backend`](https://github.com/mongodb/django-mongodb-backend).
 
@@ -78,7 +80,6 @@ just clean            # rm -rvf demo
 - Project template — [github.com/mongodb-labs/django-mongodb-project](https://github.com/mongodb-labs/django-mongodb-project)
 - `polls` — [github.com/aclark4life/polls](https://github.com/aclark4life/polls)
 - Atlas free tier — [mongodb.com/atlas](https://www.mongodb.com/atlas)
-- Video — [An Evening of Python Coding 2026 05 19](https://www.youtube.com/watch?v=mA-UgdzqMIY)
 
 ## License
 
