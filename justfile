@@ -84,6 +84,12 @@ clean:
 open:
     open index.html
 
+# Generate a PDF of the slides (one page per fragment)
+pdf:
+    @echo "Generating PDF... this may take a minute"
+    @npx -y -p decktape@3.16.1 decktape reveal --fragments --size 1280x720 index.html slides.pdf
+    @echo "Created slides.pdf"
+
 # Aliases
 alias s := startproject
 alias p := polls

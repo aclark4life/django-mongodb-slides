@@ -62,8 +62,14 @@
         background: var(--mdb-green-dark); color: #fff; font-size: 0.5em; vertical-align: middle;
       }
       .reveal blockquote { border-left: 4px solid var(--mdb-green); }
-      .reveal .fragment.collapse:not(.visible) { display: none; }
+
       .reveal .slides section.top-align { top: 40px !important; }
+
+      /* PDF export: visit ?print-pdf, then File → Print → Save as PDF.
+         Reveal.js adds .print-pdf to <html> when that query param is present. */
+      .print-pdf .reveal pre code { max-height: none !important; overflow: visible !important; }
+      .print-pdf .mdb-watermark { display: none; }
+      .print-pdf .reveal .copy-btn { display: none; }
 
       .reveal .copy-btn {
         margin-top: 0.4em; padding: 0.4em 1em;
@@ -107,16 +113,16 @@
         <section class="denser">
           <h2>Agenda</h2>
           <ul class="tight">
-            <li class="fragment">Install library &amp; start project</li>
-            <li class="fragment">Start MongoDB local or Atlas</li>
-            <li class="fragment">Meet Django MongoDB Backend</li>
-            <li class="fragment">Why MongoDB for a Django app?</li>
-            <li class="fragment">Modeling: embedded docs, arrays, ObjectIds</li>
-            <li class="fragment">Querying &amp; aggregation</li>
-            <li class="fragment">Indexes &amp; unique constraints</li>
-            <li class="fragment">What's new in 6.0: encryption, geo, polymorphism</li>
-            <li class="fragment">Limitations &amp; resources</li>
-            <li class="fragment">Demo: <code>polls</code> app</li>
+            <li>Install library &amp; start project</li>
+            <li>Start MongoDB local or Atlas</li>
+            <li>Meet Django MongoDB Backend</li>
+            <li>Why MongoDB for a Django app?</li>
+            <li>Modeling: embedded docs, arrays, ObjectIds</li>
+            <li>Querying &amp; aggregation</li>
+            <li>Indexes &amp; unique constraints</li>
+            <li>What's new in 6.0: encryption, geo, polymorphism</li>
+            <li>Limitations &amp; resources</li>
+            <li>Demo: <code>polls</code> app</li>
           </ul>
           <aside class="notes">
             This talk is organized into ten sections. The first two cover installation and environment setup. The next two introduce the backend and make the case for MongoDB with Django. The middle four cover daily development: modeling with embedded documents and arrays, querying, indexing, and unique constraints. Three features new in version 6.0 follow: queryable encryption, spatial lookups, and polymorphic embedded models. The talk closes with known limitations and a live demonstration of the polls application.
@@ -159,7 +165,7 @@ django-admin startproject -v 3 demo \
           <h2>Start project 🤔</h2>
           <div style="position: relative; display: inline-block;">
             <img src="assets/startproject-screenshot.png" alt="Terminal output of django-admin startproject -v 3" style="max-height: 50vh; border-radius: 6px; display: block;" />
-            <img class="fragment" src="assets/startproject-screenshot2.png" alt="Annotated: empty 'with filenames:' line circled" style="position: absolute; top: 0; left: 0; max-height: 50vh; border-radius: 6px;" />
+            <img src="assets/startproject-screenshot2.png" alt="Annotated: empty 'with filenames:' line circled" style="position: absolute; top: 0; left: 0; max-height: 50vh; border-radius: 6px;" />
           </div>
           <aside class="notes">
             Running startproject with verbosity 3 lists every file Django processes. Notice the 'with filenames:' line is empty. Only files with a .py extension were rendered as templates; files such as Dockerfile or Procfile were copied verbatim. The next slide explains how to include them using the --name flag.
@@ -296,17 +302,17 @@ dropdb:
 
         <!-- 11. Meet the backend -->
         <section class="top-align">
-          <h2>Meet Django MongoDB Backend <span class="fragment">🎉</span><span class="fragment">🎉</span><span class="fragment">🎉</span></h2>
+          <h2>Meet Django MongoDB Backend 🎉🎉🎉</h2>
           <ul class="tight" style="font-size: 0.75em;">
-            <li class="fragment">Built on PyMongo</li>
-            <li class="fragment">Tracks Django releases: <span class="pill">5.2</span> <span class="pill">6.0</span></li>
-            <li class="fragment">A first-class Django database backend
+            <li>Built on PyMongo</li>
+            <li>Tracks Django releases: <span class="pill">5.2</span> <span class="pill">6.0</span></li>
+            <li>A first-class Django database backend
               <ul class="tight">
-                <li class="fragment collapse">Not an ODM bolt-on or sidecar</li>
-                <li class="fragment collapse">Listed in Django's<br /><a href="https://docs.djangoproject.com/en/6.0/ref/databases/#third-party-notes" target="_blank" rel="noopener">third-party database backends</a></li>
-                <li class="fragment collapse">Translates the ORM to MQL
+                <li>Not an ODM bolt-on or sidecar</li>
+                <li>Listed in Django's<br /><a href="https://docs.djangoproject.com/en/6.0/ref/databases/#third-party-notes" target="_blank" rel="noopener">third-party database backends</a></li>
+                <li>Translates the ORM to MQL
                   <ul class="tight">
-                    <li class="fragment collapse"><code>str(qs.query)</code> prints MQL</li>
+                    <li><code>str(qs.query)</code> prints MQL</li>
                   </ul>
                 </li>
               </ul>
@@ -1062,8 +1068,11 @@ python manage.py runserver  # then visit /polls/
         hash: true,
         slideNumber: 'c/t',
         transition: 'slide',
+        pdfSeparateFragments: false,
         plugins: [Highlight, Notes],
       });
+      // Expose globally so PDF tools (e.g. decktape) can detect Reveal.
+      window.Reveal = deck;
 
       // After highlight.js has run, store each block's rendered text so the
       // copy handler always gets clean, newline-correct content.
