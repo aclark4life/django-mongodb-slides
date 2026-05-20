@@ -59,7 +59,7 @@ wire that URI into `MONGODB_URI` — the same env var the generated
 
 ```bash
 just startproject     # scaffold ./demo from the mongodb-labs project template
-just polls            # install & wire up the polls app, run migrate, seed data
+just polls            # install & configure the polls app, run migrate, seed data
 just runserver        # http://127.0.0.1:8000/polls/
 
 just dropdb           # wipe the database between runs
