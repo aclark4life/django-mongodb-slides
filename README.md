@@ -23,7 +23,7 @@ just open
 | `index.html`                          | The deck (single file, CDN-hosted reveal.js) |
 | `assets/mongodb/`                     | MongoDB brand SVGs                          |
 | `assets/startproject-screenshot*.png` | Terminal screenshots used in the deck        |
-| `templates/project_template/`         | Local copy of the MongoDB project template   |
+| `slides.pdf`                          | Exported PDF of the slide deck               |
 | `justfile`                            | Recipes for the demo workflow                |
 
 ## `justfile` recipes

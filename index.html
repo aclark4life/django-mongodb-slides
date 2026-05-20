@@ -283,7 +283,8 @@ _uri:
     ...
 
 startproject:
-    django-admin startproject demo -v 3 --template templates/project_template
+    django-admin startproject demo -v 3 \
+      --template https://github.com/mongodb-labs/django-mongodb-project/archive/refs/heads/6.0.x.zip
 
 runserver:
     cd demo && MONGODB_URI="$(just _uri)" python manage.py runserver
