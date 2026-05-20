@@ -1,5 +1,7 @@
 # django-mongodb-slides
 
+![Title slide](assets/slide1-01.png)
+
 A [reveal.js](https://revealjs.com/) slide deck on building Django apps
 on MongoDB with [`django-mongodb-backend`](https://github.com/mongodb/django-mongodb-backend).
 
@@ -23,6 +25,7 @@ just open
 | `index.html`                          | The deck (single file, CDN-hosted reveal.js) |
 | `assets/mongodb/`                     | MongoDB brand SVGs                          |
 | `assets/startproject-screenshot*.png` | Terminal screenshots used in the deck        |
+| `assets/slide1-01.png`               | Title slide image used in this README        |
 | `slides.pdf`                          | Exported PDF of the slide deck               |
 | `justfile`                            | Recipes for the demo workflow                |
 
